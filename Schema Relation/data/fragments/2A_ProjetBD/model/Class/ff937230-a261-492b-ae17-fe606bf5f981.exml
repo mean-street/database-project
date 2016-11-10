@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="" version="4">
   <OBJECT>
-    <ID name="" mc="Standard.Class" uid="490726b9-17f8-4379-9c32-0b1d219194ec"/>
+    <ID name="" mc="Standard.Class" uid="ff937230-a261-492b-ae17-fe606bf5f981"/>
     <PID name="2a_projetbd" mc="Standard.Package" uid="0f3e86a4-d27a-4650-b856-7cf53ce539fb"/>
     <ATTRIBUTES>
       <ATT name="IsActive">false</ATT>
@@ -17,7 +17,7 @@
     <DEPENDENCIES>
       <COMP relation="OwnedAttribute">
         <OBJECT>
-          <ID name="NbPlaceDispo" mc="Standard.Attribute" uid="f45c2c30-3fee-47e3-a98d-f69cfb77e079"/>
+          <ID name="NbPlaceDispo" mc="Standard.Attribute" uid="18b08293-3996-4f31-a8d7-080a608dfb48"/>
           <ATTRIBUTES>
             <ATT name="TypeConstraint"></ATT>
             <ATT name="Value"></ATT>
