@@ -22,6 +22,7 @@
         <COMPID name="Forfait" mc="Standard.Class" uid="96a2488f-90ae-43d6-8998-ef29f7479206"/>
         <COMPID name="ForfaitIllimité" mc="Standard.Class" uid="fe2032f1-39d2-46ba-881b-58bb5f4aa779"/>
         <COMPID name="ForfaitLocation" mc="Standard.Class" uid="73782464-e44e-4575-b163-531d9d6b3d69"/>
+        <COMPID name="" mc="Standard.Class" uid="ff937230-a261-492b-ae17-fe606bf5f981"/>
       </COMP>
       <COMP relation="Product">
         <COMPID name="overview diagram" mc="Standard.ClassDiagram" uid="70e6a839-9aeb-49b3-a6fd-d49a9679c690"/>

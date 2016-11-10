@@ -161,7 +161,22 @@
                         <ATT name="Name"><![CDATA[POSSEDE]]></ATT>
                         <ATT name="status">1970354901745664</ATT>
                       </ATTRIBUTES>
-                      <DEPENDENCIES></DEPENDENCIES>
+                      <DEPENDENCIES>
+                        <COMP relation="LinkToClass">
+                          <OBJECT>
+                            <ID name="ClassAssociation" mc="Standard.ClassAssociation" uid="3ce58b2a-0edb-4a83-91a1-e5083119a5fc"/>
+                            <ATTRIBUTES>
+                              <ATT name="Name"><![CDATA[ClassAssociation]]></ATT>
+                              <ATT name="status">1970354901745664</ATT>
+                            </ATTRIBUTES>
+                            <DEPENDENCIES>
+                              <LINK relation="ClassPart">
+                                <ID name="" mc="Standard.Class" uid="ff937230-a261-492b-ae17-fe606bf5f981"/>
+                              </LINK>
+                            </DEPENDENCIES>
+                          </OBJECT>
+                        </COMP>
+                      </DEPENDENCIES>
                     </OBJECT>
                   </COMP>
                 </DEPENDENCIES>
