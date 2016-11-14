@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="2A_ProjetBD" version="4">
+  <OBJECT>
+    <ID name="2A_ProjetBD" mc="Analyst.AnalystProject" uid="31048de0-2e43-47a5-a653-61d752ba3a49"/>
+    <ATTRIBUTES>
+      <ATT name="Name"><![CDATA[2A_ProjetBD]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES></DEPENDENCIES>
+  </OBJECT>
+</EXT>

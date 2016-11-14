@@ -1,0 +1,41 @@
+Backup of data directory... 
+Migrating '2A_ProjetBD' model ...
+
+The '2A_ProjetBD' model will be migrated:
+   from: Standard v1.1.00, modelio.kernel v1.0.00
+   to:   Standard v2.0.00, modelio.kernel v1.0.00
+with the following steps:
+  - from 'Standard v1.1.00' to 'Standard v2.0.00' 
+
+
+Migrating '2A_ProjetBD' model toward 'Standard v2.0.00' metamodel ...
+Rebuilding '2A_ProjetBD' indexes...
+ Running 'MigratorFrom35' migrator ... 
+  Transmuted ''{cb806349-ee8e-425a-9c07-9ca1cf4c08a3} Standard.Note *Deleted* to ''{0dfc9d12-5308-4957-ae0a-d1b833c653b9} Infrastructure.Note (reidentification scheduled).
+  Transmuted ''{8f0fc8d1-6d09-47fc-959d-91a881cb66b8} Standard.Note *Deleted* to ''{11ad5044-e289-4916-b310-ae2a38f14af0} Infrastructure.Note (reidentification scheduled).
+  Transmuted 'description'{00000000-0000-3e81-0000-000000000000} Standard.NoteType *Deleted* to 'description'{ee7cf7f3-433c-4e93-8c3e-c1690ac1c792} Infrastructure.NoteType (reidentification scheduled).
+  Transmuted 'LocalModule'{ce03ffb2-4801-4878-bf13-cba9a32bc175} Standard.ModuleComponent *Deleted* to 'LocalModule'{e0724eb9-6136-4e6e-a966-1621326f1d7e} Infrastructure.ModuleComponent (reidentification scheduled).
+  Transmuted '2A_ProjetBD'{d03cdf77-d3ba-437c-b4c0-15a267df9df0} Standard.DiagramSet *Deleted* to '2A_ProjetBD'{1f7a359f-f05e-4e46-99fb-9ffc49f7d303} Infrastructure.DiagramSet (reidentification scheduled).
+  Transmuted '2A_ProjetBD'{31048de0-2e43-47a5-a653-61d752ba3a49} Standard.AnalystProject *Deleted* to '2A_ProjetBD'{ca361e83-d8e1-40c5-b96f-9beab58558ac} Analyst.AnalystProject (reidentification scheduled).
+  Transmuted 'LocalProfile'{04c7775c-48cc-46a4-b313-3353e2afda03} Standard.Profile *Deleted* to 'LocalProfile'{30abc9f9-4689-4f39-8eed-5e7479debcf2} Infrastructure.Profile (reidentification scheduled).
+
+ Processing 3.5 Analyst property container...
+ Found 1 property containers in '2A_ProjetBD'{ca361e83-d8e1-40c5-b96f-9beab58558ac} Analyst.AnalystProject. 
+   Found 0 property table definitions in '2A_ProjetBD'{ef303f8a-d146-4a52-b08d-124376c6581f} Standard.PropertyContainer. 
+   Deleted obsolete '2A_ProjetBD'{ef303f8a-d146-4a52-b08d-124376c6581f} Standard.PropertyContainer *Deleted* from '2A_ProjetBD'{ca361e83-d8e1-40c5-b96f-9beab58558ac} Analyst.AnalystProject. 
+ Processed 3.5 Analyst property containers.
+ Process 7 scheduled reidentifications...
+  Replaced ''{0dfc9d12-5308-4957-ae0a-d1b833c653b9} Infrastructure.Note *Deleted* by ''{cb806349-ee8e-425a-9c07-9ca1cf4c08a3} Infrastructure.Note.
+  Replaced ''{11ad5044-e289-4916-b310-ae2a38f14af0} Infrastructure.Note *Deleted* by ''{8f0fc8d1-6d09-47fc-959d-91a881cb66b8} Infrastructure.Note.
+  Replaced 'description'{ee7cf7f3-433c-4e93-8c3e-c1690ac1c792} Infrastructure.NoteType *Deleted* by 'description'{00000000-0000-3e81-0000-000000000000} Infrastructure.NoteType.
+  Replaced 'LocalModule'{e0724eb9-6136-4e6e-a966-1621326f1d7e} Infrastructure.ModuleComponent *Deleted* by 'LocalModule'{ce03ffb2-4801-4878-bf13-cba9a32bc175} Infrastructure.ModuleComponent.
+  Replaced '2A_ProjetBD'{1f7a359f-f05e-4e46-99fb-9ffc49f7d303} Infrastructure.DiagramSet *Deleted* by '2A_ProjetBD'{d03cdf77-d3ba-437c-b4c0-15a267df9df0} Infrastructure.DiagramSet.
+  Replaced '2A_ProjetBD'{ca361e83-d8e1-40c5-b96f-9beab58558ac} Analyst.AnalystProject *Deleted* by '2A_ProjetBD'{31048de0-2e43-47a5-a653-61d752ba3a49} Analyst.AnalystProject.
+  Replaced 'LocalProfile'{30abc9f9-4689-4f39-8eed-5e7479debcf2} Infrastructure.Profile *Deleted* by 'LocalProfile'{04c7775c-48cc-46a4-b313-3353e2afda03} Infrastructure.Profile.
+ Migrating diagram content references...
+    Diagram metaclasses: [Standard.StaticDiagram MofSmClass, Infrastructure.ImpactDiagram MofSmClass, Standard.StateMachineDiagram MofSmClass, Standard.SequenceDiagram MofSmClass, Standard.DeploymentDiagram MofSmClass, Standard.BpmnSubProcessDiagram MofSmClass, Standard.UseCaseDiagram MofSmClass, Standard.CompositeStructureDiagram MofSmClass, Standard.ObjectDiagram MofSmClass, Standard.CommunicationDiagram MofSmClass, Standard.ClassDiagram MofSmClass, Standard.BpmnProcessCollaborationDiagram MofSmClass, Standard.BehaviorDiagram MofSmClass, Standard.ActivityDiagram MofSmClass]
+     Processing 'overview diagram'{70e6a839-9aeb-49b3-a6fd-d49a9679c690} Standard.ClassDiagram ...
+ Reidentifications done.
+  warn: /user/6/.base/moucheta/home/Documents/S3/BD/2A_ProjetBD/Schema Relation/data/fragments/2A_ProjetBD/model/AnalystProject/31048de0-2e43-47a5-a653-61d752ba3a49.exml: Unknown metaclass for ''2A_ProjetBD' {31048de0-2e43-47a5-a653-61d752ba3a49} Analyst.AnalystProject'.
+'2A_ProjetBD' migration sucessful.
+Archiving '2A_ProjetBD' model backup to '/user/6/.base/moucheta/home/Documents/S3/BD/2A_ProjetBD/Schema Relation/.runtime/fragments/2A_ProjetBD/migration_archive' ...
