@@ -5,7 +5,6 @@ DROP TABLE StationVehicle PURGE;
 DROP TABLE StationLocation PURGE;
 DROP TABLE StationClass PURGE;
 DROP TABLE Location PURGE;
-DROP TABLE Spot PURGE;
 DROP TABLE Subscriber PURGE;
 DROP TABLE Vehicle PURGE;
 DROP TABLE VehicleClass PURGE;
