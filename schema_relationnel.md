@@ -11,6 +11,8 @@ Adresse
 
 Places
 ------
+NomS (PK) (FK -> STATION.NomS)
+NomC (PK) (FK -> CATEGORIE.NomC)
 NbPlacesDispo
 
 LOCATION
