@@ -1,4 +1,4 @@
-Relations
+Relations => tout est 3FNBCK
 =========
 
 Noms en CAPS LOCK = tables "classiques"
@@ -8,13 +8,6 @@ STATION
 -------
 NomS (PK)
 Adresse
-
-Places
-------
-NomS (PK) (FK -> STATION.NomS)
-NomC (PK) (FK -> CATEGORIE.NomC)
-NbPlacesDispo
-
 LOCATION
 --------
 idLocation (PK)
