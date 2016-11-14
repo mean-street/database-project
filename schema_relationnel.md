@@ -1,13 +1,18 @@
-Relations (à revoir)
-====================
+Relations
+=========
+
+Noms en CAPS LOCK = tables "classiques"
+Autres noms = tables d'association
 
 STATION
 -------
 NomS (PK)
 Adresse
 
-PLACES
+Places
 ------
+NomS (PK) (FK -> STATION.NomS)
+NomC (PK) (FK -> CATEGORIE.NomC)
 NbPlacesDispo
 
 LOCATION
@@ -16,15 +21,13 @@ idLocation (PK)
 NomS (FK -> STATION.NomS)
 NoCB (FK -> ABONNE.NoCB)
 idV (FK -> VEHICULE.idV)
-DateDebut
-DateFin
-HeureDebut
-HeureFin
+DateTimeDebut
 
 StationLocation (0..1)
 ---------------
 NomS (FK -> STATION.NomS)
 idLocation (PK) (FK -> LOCATION.idLocation)
+DateTimeFin
 
 CATEGORIE
 ---------
@@ -63,16 +66,16 @@ CategorieAbonne ( * )
 NomC (PK) (FK -> CATEGORIE.NomC)
 NoCB (PK) (FK -> ABONNE.NoCB)
 
-FORFAITILLIMITE
+ForfaitIllimite
 ---------------
 NoCB (PK) (FK -> ABONNE.NoCB)
 NomC (PK) (FK -> CATEGORIE.NomC)
 Duree
-DateDebut
+DateTimeDebut
 FCT
 Prix
 
-FORFAITLOCATION
+ForfaitLocation
 ---------------
 NoCB (PK) (FK -> ABONNE.NoCB)
 NomC (PK) (FK -> CATEGORIE.NomC)
