@@ -6,8 +6,8 @@ CREATE TABLE Subscriber(
 	Adress VARCHAR(50)
 );
 
-CREATE TABLE Vehicule(
-	IdVehicule INTEGER PRIMARY KEY,
+CREATE TABLE Vehicle(
+	IdVehicle INTEGER PRIMARY KEY,
 	Seats INTERGER
 );
 
@@ -24,8 +24,14 @@ CREATE TABLE Station(
 );
 
 CREATE TABLE Location(
+	idLocation INTEGER PRIMARY KEY,
+	StationName VARCHAR(20),
+	CreditCard VARCHAR(30),
+	idVehicle VARCHAR(20),
 	StartDate DATE,
-	EndDate DATE
+	CONSTRAINT fk_LocationSation FOREIGN KEY(StationName) REFERENCES Station(StationName),
+	CONSTRAINT fk_LocationSubscriber FOREIGN KEY(CreditCard) REFERENCES Subscriber(CreditCard),
+	CONSTRAINT fk_LocationVehicle FOREIGN KEY(idVehicle) REFERENCES Vehicle(idVehicle)
 );
 
 CREATE TABLE UserClassIllimitedRate(
@@ -50,4 +56,9 @@ CREATE TABLE UserClassLimitedRate(
 );
 
 CREATE TABLE Spot(
+	StationName VARCHAR(20),
+	ClassName VARCHAR(20),
+	CONSTRAINT pk_SpotStationClass PRIMARY KEY(StationName,ClassName),
+	CONSTRAINT fk_SpotStation FOREIGN KEY(StationName) REFERENCES Station(StationName),
+	CONSTRAINT fk_SpotStation FOREIGN KEY(ClassName) REFERENCES Class(ClassName)
 );
