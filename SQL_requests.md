@@ -54,13 +54,39 @@ Output : tuples (Month/Year, name of the class, average time of use)
 
 Catégorie de véhicule la plus utilisée par tranche d'age de 10 ans
 ------------------------------------------------------------------
+Input : null
+Output : tuples (Decade, name of the class, total time of use)
 	begin;
-	...
+	SELECT Decade, Class, MAX(UseTime)
+
+	FROM (
+			SELECT 	to_char(extract(year FROM Location.StartDate) / 10 * 10) AS Decade,
+					Vehicle.ClassName AS Class,
+					sum(Location.StartDate - StationLocation.EndDate) AS UseTime
+
+			FROM Location, StationLocation, Vehicle
+
+			WHERE Location.IdLocation = StationLocation.IdLocation
+			AND Vehicle.IdVehicle = Location.IdVehicle
+
+			GROUP BY extract(year FROM Location.StartDate) / 10, Vehicle.ClassName;
+	)
+
+	GROUP BY Decade;
 	commit;
 
 Taux d'occupation des stations dans la journée
 ----------------------------------------------
+Input : null
+Output : tuples (Station, occupancy rate)
 	begin;
-	...
+	SELECT Station.StationName, COUNT(StationVehicle.IdVehicle) / StationClass.MaxSpots
+
+	FROM Station, StationVehicle, StationClass
+
+	WHERE Station.StationName = StationClass.StationName
+	AND Station.StationName = StationVehicle.StationName
+
+	GROUP BY Station.StationName;
 	commit;
 
