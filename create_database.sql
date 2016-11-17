@@ -1,12 +1,10 @@
 -- DROP all tables
 DROP TABLE UserClassIllimitedRate PURGE;
 DROP TABLE UserClassLimitedRate PURGE;
-DROP TABLE SubscriberClass PURGE;
 DROP TABLE StationVehicle PURGE;
 DROP TABLE StationLocation PURGE;
 DROP TABLE StationClass PURGE;
 DROP TABLE Location PURGE;
-DROP TABLE Spot PURGE;
 DROP TABLE Subscriber PURGE;
 DROP TABLE Vehicle PURGE;
 DROP TABLE VehicleClass PURGE;
@@ -34,7 +32,7 @@ CREATE TABLE VehicleClass(
 CREATE TABLE Vehicle(
 	IdVehicle INTEGER PRIMARY KEY NOT NULL,
 	ClassName VARCHAR(20) NOT NULL,
-	Seats INTEGER,
+	Seats INTEGER NOT NULL,
 	CONSTRAINT fk_VehicleClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
 	CONSTRAINT ck_Seats CHECK (Seats > 0)
 );
@@ -46,68 +44,74 @@ CREATE TABLE Station(
 
 CREATE TABLE Location(
 	IdLocation INTEGER PRIMARY KEY NOT NULL,
-	StationName VARCHAR(20),
-	CreditCard VARCHAR(30),
-	IdVehicle INTEGER,
-	StartDate DATE,
-	CONSTRAINT fk_LocationSation FOREIGN KEY(StationName) REFERENCES Station(StationName),
+	StartStationName VARCHAR(20) NOT NULL,
+	CreditCard VARCHAR(30) NOT NULL,
+	IdVehicle INTEGER NOT NULL,
+	StartDate DATE NOT NULL,
+	CONSTRAINT fk_LocationStation FOREIGN KEY(StartStationName) REFERENCES Station(StationName),
 	CONSTRAINT fk_LocationSubscriber FOREIGN KEY(CreditCard) REFERENCES Subscriber(CreditCard),
 	CONSTRAINT fk_LocationVehicle FOREIGN KEY(IdVehicle) REFERENCES Vehicle(IdVehicle)
 );
 
 CREATE TABLE UserClassIllimitedRate(
-	CreditCard VARCHAR(30),
-	ClassName VARCHAR(20),
-	Duration FLOAT(4),
-	StartDate DATE,
-	PRICE FLOAT(4),
+	CreditCard VARCHAR(30) NOT NULL,
+	ClassName VARCHAR(20) NOT NULL,
+	Duration INTEGER NOT NULL,
+	StartDate DATE NOT NULL,
+	Price FLOAT NOT NULL,
 	CONSTRAINT pk_UserClassIllimitedRate PRIMARY KEY(CreditCard,ClassName),
 	CONSTRAINT fk_IllimitedRateUser FOREIGN KEY(CreditCard) REFERENCES Subscriber(CreditCard),
-	CONSTRAINT fk_IllimitedRateClass FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName)
+	CONSTRAINT fk_IllimitedRateClass FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
+	CONSTRAINT ck_UserClassIllimitedRatePrice CHECK (Price > 0)
 );
 
 CREATE TABLE UserClassLimitedRate(
 	CreditCard VARCHAR(30),
 	ClassName VARCHAR(20),
-	MaxAmount INTEGER,
-	PRICE FLOAT(4),
+	NbLocation INTEGER,
+	Price FLOAT,
 	CONSTRAINT pk_UserClassLimitedRate PRIMARY KEY(CreditCard,ClassName),
 	CONSTRAINT fk_LimitedRateUser FOREIGN KEY(CreditCard) REFERENCES Subscriber(CreditCard),
-	CONSTRAINT fk_LimitedRateClass FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName)
+	CONSTRAINT fk_LimitedRateClass FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
+	CONSTRAINT ck_UserClassLimitedRatePrice CHECK (Price > 0)
 );
-
-CREATE TABLE SubscriberClass(
-	ClassName VARCHAR(20),
-	CreditCard VARCHAR(30),
-	CONSTRAINT pk_SubscriberClass PRIMARY KEY(ClassName,CreditCard),
-	CONSTRAINT fk_SubscriberClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
-	CONSTRAINT fk_SubscriberClassCard FOREIGN KEY(CreditCard) REFERENCES Subscriber(CreditCard)
-);
-
 
 CREATE TABLE StationVehicle(
-	IdVehicle INTEGER PRIMARY KEY,
-	StationName VARCHAR(20),
-	CONSTRAINT fk_StationVehicle FOREIGN KEY(IdVehicle) REFERENCES Vehicle(IdVehicle)
+	IdVehicle INTEGER PRIMARY KEY NOT NULL,
+	StationName VARCHAR(20) NOT NULL,
+	CONSTRAINT fk_StationVehicleVehicle FOREIGN KEY(IdVehicle) REFERENCES Vehicle(IdVehicle),
+	CONSTRAINT fk_StationVehicleStation FOREIGN KEY(StationName) REFERENCES Station(StationName)
 );
 
-
 CREATE TABLE StationLocation(
-	IdLocation INTEGER PRIMARY KEY,
-	StationName VARCHAR(20),
-	EndDate DATE,
+	IdLocation INTEGER PRIMARY KEY NOT NULL,
+	EndStationName VARCHAR(20) NOT NULL,
+	EndDate DATE NOT NULL,
 	CONSTRAINT fk_StationLocationId FOREIGN KEY(IdLocation) REFERENCES Location(IdLocation),
-	CONSTRAINT fk_StationLocationName FOREIGN KEY(StationName) REFERENCES Station(StationName)
+	CONSTRAINT fk_StationLocationName FOREIGN KEY(EndStationName) REFERENCES Station(StationName)
 );
 
 CREATE TABLE StationClass(
-	StationName VARCHAR(20),
-	ClassName VARCHAR(20),
-	MaxSpots INTEGER,
+	StationName VARCHAR(20) NOT NULL,
+	ClassName VARCHAR(20) NOT NULL,
+	MaxSpots INTEGER NOT NULL,
 	CONSTRAINT pk_StationClass PRIMARY KEY(StationName,ClassName),
 	CONSTRAINT fk_StationClassStationName FOREIGN KEY(StationName) REFERENCES Station(StationName),
-	CONSTRAINT fk_StationClassClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName)
+	CONSTRAINT fk_StationClassClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
+	CONSTRAINT ck_StationClassMaxSpots CHECK (MaxSpots >= 0)
 );
 
--- INSERT INTO Station VALUES("ISS","orbite terrestre basse");
--- INSERT INTO VehicleClass VALUES(1,"Rocket",6);
+-- INSERTION
+-- VehicleClass
+INSERT INTO VehicleClass (ClassName, MaxDuration, HourlyPrice, Deposit) VALUES ('Voiture', 20, 15.0, 300.0);
+
+-- Vehicle
+--INSERT INTO Vehicle (IdVehicle, ClassName, Seat) VALUES (20, 15.0, 300.0);
+
+-- VERIFIER LES CONTRAINTES AVANT DE D'EXECUTER LES FONCTIONNALITES
+
+-- IdVehicle INTEGER PRIMARY KEY NOT NULL,
+-- ClassName VARCHAR(20) NOT NULL,
+-- Seats INTEGER,
+-- CONSTRAINT fk_VehicleClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
+-- CONSTRAINT ck_Seats CHECK (Seats > 0)
