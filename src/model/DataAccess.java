@@ -2,14 +2,15 @@ package model;
 
 import java.util.ArrayList;
 import java.sql.*;
+import controller.*;
 
 public class DataAccess {
 	private Connection connection;
+	private Statement statement;
 
 	public DataAccess(){
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
-			//DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
 			String database = "jdbc:oracle:thin:@ensioracle1.imag.fr:1521:ensioracle1";
 			String user = "carrel";
 			String password = "carrel";
@@ -36,7 +37,6 @@ public class DataAccess {
 			PreparedStatement statement = this.connection.prepareStatement(query);
 			statement.setInt(1,id_location);
 			ResultSet result_set = statement.executeQuery();
-			ResultSetMetaData rsmd = result_set.getMetaData();
 
 			ArrayList<LocationBill> result_list = new ArrayList<LocationBill>();
 			while(result_set.next()){
@@ -46,6 +46,52 @@ public class DataAccess {
 				location_bill.setHourlyPrice(result_set.getFloat(3));
 				location_bill.setDeposit(result_set.getFloat(4));
 				result_list.add(location_bill);
+			}
+			result_set.close();
+			statement.close();
+			return result_list;
+		} catch(SQLException e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public ArrayList<MonthlyVehicle> getMonthlyVehicle(){
+		try {
+			String query = "SELECT TO_CHAR(Location.StartDate,'YYYY-MM') AS LocationDate, Vehicle.IdVehicle AS Vehicle,COUNT(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.IdVehicle";
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+
+			ArrayList<MonthlyVehicle> result_list = new ArrayList<MonthlyVehicle>();
+			while(result_set.next()){
+				MonthlyVehicle monthly_vehicle = new MonthlyVehicle();
+				monthly_vehicle.setDate(result_set.getString(1));
+				monthly_vehicle.setVehicleId(result_set.getInt(2));
+				monthly_vehicle.setAverageTime(result_set.getFloat(3));
+				result_list.add(monthly_vehicle);
+			}
+			result_set.close();
+			statement.close();
+			return result_list;
+		} catch(SQLException e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ArrayList<MonthlyClass> getMonthlyClass(){
+		try {
+			String query = "SELECT TO_CHAR(Location.StartDate,'YYYY-MM') AS Date, Vehicle.ClassName AS VehicleClass, SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse	FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle GROUP BY to_char(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName";
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+
+			ArrayList<MonthlyClass> result_list = new ArrayList<MonthlyClass>();
+			while(result_set.next()){
+				MonthlyClass monthly_class = new MonthlyClass();
+				monthly_class.setDate(result_set.getString(1));
+				monthly_class.setClassName(result_set.getString(2));
+				monthly_class.setAverageTime(result_set.getFloat(3));
+				result_list.add(monthly_class);
 			}
 			result_set.close();
 			statement.close();
