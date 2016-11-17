@@ -35,19 +35,19 @@ INSERT INTO Station (StationName, StationAddress) VALUES ('JeanJaures', 'Lyon');
 
 -- Location ####################################################################
 INSERT INTO Location (IdLocation, StartStationName, CreditCard, IdVehicle, StartDate)
-VALUES (1, 'JeanJaures', 001, 2, TO_DATE('11/11/2016 05:18', 'dd/mm/yyyy hh:mm'));
+VALUES (1, 'JeanJaures', 001, 2, TO_DATE('11/11/2016 05:18', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO Location (IdLocation, StartStationName, CreditCard, IdVehicle, StartDate)
-VALUES (2, 'Austerlitz', 004, 5, TO_DATE('5/11/2016 20:39', 'dd/mm/yyyy hh:mm'));
+VALUES (2, 'Austerlitz', 004, 5, TO_DATE('5/11/2016 20:39', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO Location (IdLocation, StartStationName, CreditCard, IdVehicle, StartDate)
-VALUES (3, 'Chatelet', 001, 4, TO_DATE('16/11/2016 15:14', 'dd/mm/yyyy hh:mm'));
+VALUES (3, 'Chatelet', 001, 4, TO_DATE('16/11/2016 15:14', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO Location (IdLocation, StartStationName, CreditCard, IdVehicle, StartDate)
-VALUES (4, 'Austerlitz', 002, 5, TO_DATE('15/11/2016 12:52', 'dd/mm/yyyy hh:mm'));
+VALUES (4, 'Austerlitz', 002, 5, TO_DATE('15/11/2016 12:52', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO Location (IdLocation, StartStationName, CreditCard, IdVehicle, StartDate)
-VALUES (5, 'Austerlitz', 004, 1, TO_DATE('17/11/2016 08:05', 'dd/mm/yyyy hh:mm'));
+VALUES (5, 'Austerlitz', 004, 1, TO_DATE('17/11/2016 08:05', 'dd/mm/yyyy hh24:mi'));
 
 -- UserClassIllimitedRate ######################################################
 INSERT INTO UserClassIllimitedRate (CreditCard, ClassName, Duration, StartDate, Price)
-VALUES (002, 'Velo', 365, TO_DATE('07/07/2016 21:45', 'dd/mm/yyyy hh:mm'), 200);
+VALUES (002, 'Velo', 365, TO_DATE('07/07/2016 21:45', 'dd/mm/yyyy hh24:mi'), 200);
 
 -- UserClassLimitedRate ########################################################
 INSERT INTO UserClassLimitedRate (CreditCard, ClassName, NbLocation, Price)
@@ -63,41 +63,41 @@ INSERT INTO StationVehicle (IdVehicle, StationName) VALUES (6, 'JeanJaures');
 
 -- StationLocation #############################################################
 INSERT INTO StationLocation (IdLocation, EndStationName, EndDate)
-VALUES (1, 'Austerlitz', TO_DATE('12/11/2016 17:56', 'dd/mm/yyyy hh:mm');
+VALUES (1, 'Austerlitz', TO_DATE('12/11/2016 17:56', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO StationLocation (IdLocation, EndStationName, EndDate)
-VALUES (2, 'Austerlitz', TO_DATE('07/11/2016 15:26', 'dd/mm/yyyy hh:mm');
+VALUES (2, 'Austerlitz', TO_DATE('07/11/2016 15:26', 'dd/mm/yyyy hh24:mi'));
 
 -- StationClass ################################################################
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('Chatelet', 'VoitureElectrique', 10)
+VALUES ('Chatelet', 'VoitureElectrique', 10);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('Chatelet', 'Velo', 5)
+VALUES ('Chatelet', 'Velo', 5);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('Chatelet', 'VeloElectrique', 3)
+VALUES ('Chatelet', 'VeloElectrique', 3);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('Chatelet', 'VeloRemorque', 7)
+VALUES ('Chatelet', 'VeloRemorque', 7);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('Chatelet', 'Utilitaire', 9)
+VALUES ('Chatelet', 'Utilitaire', 9);
 
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('Austerlitz', 'VoitureElectrique', 5)
+VALUES ('Austerlitz', 'VoitureElectrique', 5);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('Austerlitz', 'Velo', 3)
+VALUES ('Austerlitz', 'Velo', 3);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('Austerlitz', 'VeloElectrique', 4)
+VALUES ('Austerlitz', 'VeloElectrique', 4);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('Austerlitz', 'VeloRemorque', 6)
+VALUES ('Austerlitz', 'VeloRemorque', 6);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('Austerlitz', 'Utilitaire', 10)
+VALUES ('Austerlitz', 'Utilitaire', 10);
 
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('JeanJaures', 'VoitureElectrique', 7)
+VALUES ('JeanJaures', 'VoitureElectrique', 7);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('JeanJaures', 'Velo', 3)
+VALUES ('JeanJaures', 'Velo', 3);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('JeanJaures', 'VeloElectrique', 4)
+VALUES ('JeanJaures', 'VeloElectrique', 4);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('JeanJaures', 'VeloRemorque', 10)
+VALUES ('JeanJaures', 'VeloRemorque', 10);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
-VALUES ('JeanJaures', 'Utilitaire', 8)
+VALUES ('JeanJaures', 'Utilitaire', 8);
 
