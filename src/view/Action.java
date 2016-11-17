@@ -1,0 +1,11 @@
+package view;
+
+public enum Action {
+    QUIT,
+    HIRE_BILLING,
+    VEHICLE_MEAN_USE_TIME,
+    CATEGORY_MEAN_USE_TIME,
+    MOST_USED_CATEGORY,
+    STATION_USAGE_RATE,
+    NOTHING
+}
