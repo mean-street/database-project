@@ -6,7 +6,7 @@ public class Application {
 		DataAccess model = new DataAccess();
 		int maxSpots = model.getMaxSpots("Austerlitz","Velo");
 		System.out.println("Number of empty spots: "+maxSpots);
-		//ArrayList<LocationBill> location_list = model.getLocationBill(1);
+		ArrayList<LocationBill> location_list = model.getLocationBill(1);
 		model.closeConnection();
 	}
 }
