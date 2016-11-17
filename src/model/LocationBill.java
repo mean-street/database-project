@@ -50,4 +50,10 @@ public class LocationBill {
 	public void setDeposit(float deposit){
 		this.deposit = deposit;
 	}
+
+	@Override
+	public String toString(){
+		return "Date: "+this.date+" MaxDuration: "+this.maxDuration+" HourlyPrice: "+this.hourlyPrice+" Deposit: "+this.deposit;
+	}
+
 }
