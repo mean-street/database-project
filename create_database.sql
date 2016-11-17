@@ -108,11 +108,3 @@ CREATE TABLE StationClass(
 	CONSTRAINT fk_StationClassStationName FOREIGN KEY(StationName) REFERENCES Station(StationName),
 	CONSTRAINT fk_StationClassClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName)
 );
-
-CREATE TABLE Spot(
-	StationName VARCHAR(20),
-	ClassName VARCHAR(20),
-	CONSTRAINT pk_SpotStationClass PRIMARY KEY(StationName,ClassName),
-	CONSTRAINT fk_SpotStationStationName FOREIGN KEY(StationName) REFERENCES Station(StationName),
-	CONSTRAINT fk_SpotStationClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName)
-);
