@@ -1,32 +1,51 @@
+-- DROP all tables
+DROP TABLE UserClassIllimitedRate PURGE;
+DROP TABLE UserClassLimitedRate PURGE;
+DROP TABLE SubscriberClass PURGE;
+DROP TABLE StationVehicle PURGE;
+DROP TABLE StationLocation PURGE;
+DROP TABLE StationClass PURGE;
+DROP TABLE Location PURGE;
+DROP TABLE Spot PURGE;
+DROP TABLE Subscriber PURGE;
+DROP TABLE Vehicle PURGE;
+DROP TABLE VehicleClass PURGE;
+DROP TABLE Station PURGE;
+
+-- CREATE or RECREATE all tables
 CREATE TABLE Subscriber(
-	CreditCard VARCHAR(30) PRIMARY KEY,
-	Lastname Varchar(20),
-	Firstname VARCHAR(20),
-	Birthdate VARCHAR(20),
-	Adress VARCHAR(50)
+	CreditCard VARCHAR(30) PRIMARY KEY NOT NULL,
+	Lastname Varchar(20) NOT NULL,
+	Firstname VARCHAR(20) NOT NULL,
+	Birthdate DATE NOT NULL,
+	Address VARCHAR(50)
 );
 
 CREATE TABLE VehicleClass(
-	ClassName VARCHAR(20) PRIMARY KEY,
-	MaxDuration FLOAT(4),
-	HourlyPrice FLOAT(4),
-	Deposit FLOAT(4)
+	ClassName VARCHAR(20) PRIMARY KEY NOT NULL,
+	MaxDuration INTEGER NOT NULL,
+	HourlyPrice FLOAT NOT NULL,
+	Deposit FLOAT NOT NULL,
+	CONSTRAINT ck_MaxDuration CHECK (MaxDuration > 0),
+	CONSTRAINT ck_HourlyPrice CHECK (HourlyPrice > 0),
+	CONSTRAINT ck_Deposit CHECK (Deposit >= 0)
 );
 
 CREATE TABLE Vehicle(
-	IdVehicle INTEGER PRIMARY KEY,
-	ClassName VARCHAR(20),
+	IdVehicle INTEGER PRIMARY KEY NOT NULL,
+	ClassName VARCHAR(20) NOT NULL,
 	Seats INTEGER,
-	CONSTRAINT fk_VehicleClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName)
+	CONSTRAINT fk_VehicleClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
+	CONSTRAINT ck_Seats CHECK (Seats > 0)
 );
 
 CREATE TABLE Station(
-	StationName VARCHAR(20) PRIMARY KEY,
-	AdressName VARCHAR(20)
+	StationName VARCHAR(20) PRIMARY KEY NOT NULL,
+	StationAddress VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE Location(
-	IdLocation INTEGER PRIMARY KEY,
+	IdLocation INTEGER PRIMARY KEY NOT NULL,
 	StationName VARCHAR(20),
 	CreditCard VARCHAR(30),
 	IdVehicle INTEGER,
@@ -84,7 +103,7 @@ CREATE TABLE StationLocation(
 CREATE TABLE StationClass(
 	StationName VARCHAR(20),
 	ClassName VARCHAR(20),
-	EmptySpots INTEGER,
+	MaxSpots INTEGER,
 	CONSTRAINT pk_StationClass PRIMARY KEY(StationName,ClassName),
 	CONSTRAINT fk_StationClassStationName FOREIGN KEY(StationName) REFERENCES Station(StationName),
 	CONSTRAINT fk_StationClassClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName)
