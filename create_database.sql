@@ -108,3 +108,6 @@ CREATE TABLE StationClass(
 	CONSTRAINT fk_StationClassStationName FOREIGN KEY(StationName) REFERENCES Station(StationName),
 	CONSTRAINT fk_StationClassClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName)
 );
+
+-- INSERT INTO Station VALUES("ISS","orbite terrestre basse");
+-- INSERT INTO VehicleClass VALUES(1,"Rocket",6);
