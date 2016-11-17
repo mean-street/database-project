@@ -103,7 +103,7 @@ CREATE TABLE StationLocation(
 CREATE TABLE StationClass(
 	StationName VARCHAR(20),
 	ClassName VARCHAR(20),
-	EmptySpots INTEGER,
+	MaxSpots INTEGER,
 	CONSTRAINT pk_StationClass PRIMARY KEY(StationName,ClassName),
 	CONSTRAINT fk_StationClassStationName FOREIGN KEY(StationName) REFERENCES Station(StationName),
 	CONSTRAINT fk_StationClassClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName)
