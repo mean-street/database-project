@@ -4,13 +4,11 @@ import java.io.Console;
 
 public class IO {
     protected Console console = System.console();
-    protected Action currentAction = Action.NOTHING;
 
-    protected Action askForAction() {
-        if(this.currentAction != Action.NOTHING) {
-            throw(new IllegalStateException());
-        }
-
+    /* 
+     * Inputs
+     */
+    public Action askForAction() {
         int action = -1;
 
         System.out.println(
@@ -23,7 +21,7 @@ public class IO {
             "\t5. Taux d’occupation des stations sur la journée\n"
         );
 
-        while(action < 0 || action >= Action.values().length) {
+        while(action < 0 || action >= Action.values().length - 1) {
             try {
                 action = Integer.parseInt(this.console.readLine(
                     "Sélectionner une action [0/1/2/3/4/5] : "
@@ -36,20 +34,26 @@ public class IO {
         return Action.values()[action];
     }
 
-    public boolean next() {
-        boolean quit = false;
-
-        switch(this.currentAction) {
-            case NOTHING:
-                this.currentAction = this.askForAction();
-            break;
-            case QUIT:
-                quit = true;
-            break;
-            default:
-                throw(new IllegalStateException());
+    public int askForHireId() {
+        int id = -1;
+        
+        while(id < 0) {
+            try {
+                id = Integer.parseInt(this.console.readLine(
+                    "Identifiant de la location : "
+                ));
+            } catch(NumberFormatException e) {
+                id = -1;
+            }
         }
+ 
+        return id;
+    }
 
-        return !quit;
+    /* 
+     * Outputs
+     */
+    public void printHireBill(int bill) {
+        System.out.println("Facturation : " + bill);
     }
 }
