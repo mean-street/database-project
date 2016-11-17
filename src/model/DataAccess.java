@@ -32,7 +32,7 @@ public class DataAccess {
 
 	public ArrayList<LocationBill> getLocationBill(int id_location){
 		try {
-			String query = "SELECT StartDate,MaxDuration,HourlyPrice,Deposit FROM FROM VehicleClass,Vehicle,Location WHERE Location.IdLocation = ? AND VehicleClass.ClassName = Vehicle.ClassName AND Location.IdVehicle = Vehicle.IdVehicle";
+			String query = "SELECT StartDate,MaxDuration,HourlyPrice,Deposit FROM VehicleClass,Vehicle,Location WHERE Location.IdLocation = ? AND VehicleClass.ClassName = Vehicle.ClassName AND Location.IdVehicle = Vehicle.IdVehicle";
 			PreparedStatement statement = this.connection.prepareStatement(query);
 			statement.setInt(1,id_location);
 			ResultSet result_set = statement.executeQuery();
