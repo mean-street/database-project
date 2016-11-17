@@ -103,7 +103,7 @@ CREATE TABLE StationClass(
 
 -- INSERTION
 -- VehicleClass
-INSERT INTO VehicleClass (ClassName, MaxDuration, HourlyPrice, Deposit) VALUES ('Voiture', 20, 15.0, 300.0);
+-- INSERT INTO VehicleClass (ClassName, MaxDuration, HourlyPrice, Deposit) VALUES ('Voiture', 20, 15.0, 300.0);
 
 -- Vehicle
 --INSERT INTO Vehicle (IdVehicle, ClassName, Seat) VALUES (20, 15.0, 300.0);
