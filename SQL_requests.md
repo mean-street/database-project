@@ -1,92 +1,60 @@
 Fonctionnalités requises
 ========================
 
-	set transaction isolation level ???;
-	set autocommit off;
-
-Facturation d'une location
+Facturation d'une location => OK
 --------------------------
 Input : idLocationInput
 Output : StartDate, MaxDuration, HourlyPrice, Deposit
-	begin;
 	SELECT StartDate, MaxDuration, HourlyPrice, Deposit
-
 	FROM VehicleClass, Vehicle, Location
-
 	WHERE Location.IdLocation = idLocationInput
 	AND VehicleClass.ClassName = Vehicle.ClassName
 	AND Location.IdVehicle = Vehicle.IdVehicle;
-	commit;
 
-Temps moyen d'utilisation par véhicule par mois
+Temps moyen d'utilisation par véhicule par mois => OK
 -----------------------------------------------
 Input : null
 Output : tuples (Month/Year, ID of the vehicle, average time of use)
-	begin;
-	SELECT 	to_char(Location.StartDate, 'YYYY-MM'),
-			Vehicle.IdVehicle,
-			sum(Location.StartDate - StationLocation.EndDate) / count(Location.IdLocation)
-
+	SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS Date,
+			Vehicle.IdVehicle AS Vehicle,
+			COUNT(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse
 	FROM Location, StationLocation, Vehicle
-
 	WHERE Location.IdLocation = StationLocation.IdLocation
-	AND Vehicle.IdVehicle = Location.IdVehicule
-
+	AND Vehicle.IdVehicle = Location.IdVehicle
 	GROUP BY to_char(Location.StartDate, 'YYYY-MM'), Vehicle.IdVehicle;
-	commit;
 
-Temps moyen d'utilisation par catégorie de véhicule par mois
+Temps moyen d'utilisation par catégorie de véhicule par mois => OK
 ------------------------------------------------------------
 Input : null
 Output : tuples (Month/Year, name of the class, average time of use)
-	begin;
-	SELECT 	to_char(Location.StartDate, 'YYYY-MM'),
-			Vehicle.ClassName,
-			sum(Location.StartDate - StationLocation.EndDate) / count(Location.IdLocation)
-
+	SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS Date,
+			Vehicle.ClassName AS VehicleClass,
+			SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse
 	FROM Location, StationLocation, Vehicle
-
 	WHERE Location.IdLocation = StationLocation.IdLocation
-	AND Vehicle.IdVehicle = Location.IdVehicule
-
+	AND Vehicle.IdVehicle = Location.IdVehicle
 	GROUP BY to_char(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName;
-	commit;
 
 Catégorie de véhicule la plus utilisée par tranche d'age de 10 ans
 ------------------------------------------------------------------
-Input : null
-Output : tuples (Decade, name of the class, total time of use)
-	begin;
-	SELECT Decade, Class, MAX(UseTime)
-
-	FROM (
-			SELECT 	to_char(extract(year FROM Location.StartDate) / 10 * 10) AS Decade,
-					Vehicle.ClassName AS Class,
-					sum(Location.StartDate - StationLocation.EndDate) AS UseTime
-
-			FROM Location, StationLocation, Vehicle
-
-			WHERE Location.IdLocation = StationLocation.IdLocation
-			AND Vehicle.IdVehicle = Location.IdVehicle
-
-			GROUP BY extract(year FROM Location.StartDate) / 10, Vehicle.ClassName;
-	)
-
-	GROUP BY Decade;
-	commit;
+Input : StartDateInput, EndDateInput
+Output : tuples (name of the most used class, total time of use)
+	SELECT 	Vehicle.ClassName AS Class,
+			MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS UseTime
+	FROM Location, StationLocation, Vehicle
+	WHERE Location.IdLocation = StationLocation.IdLocation
+	AND Vehicle.IdVehicle = Location.IdVehicle
+	AND Location.StartDate > StartDateInput
+	AND StationLocation.EndDate < EndDateInput
+	GROUP BY Vehicle.ClassName;
 
 Taux d'occupation des stations dans la journée
 ----------------------------------------------
 Input : null
 Output : tuples (Station, occupancy rate)
-	begin;
-	SELECT Station.StationName, COUNT(StationVehicle.IdVehicle) / StationClass.MaxSpots
-
+	SELECT Station.StationName, COUNT(StationVehicle.IdVehicle)
 	FROM Station, StationVehicle, StationClass
-
 	WHERE Station.StationName = StationClass.StationName
 	AND Station.StationName = StationVehicle.StationName
-
 	GROUP BY Station.StationName;
-	commit;
 

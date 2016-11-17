@@ -65,7 +65,7 @@ INSERT INTO StationVehicle (IdVehicle, StationName) VALUES (6, 'JeanJaures');
 INSERT INTO StationLocation (IdLocation, EndStationName, EndDate)
 VALUES (1, 'Austerlitz', TO_DATE('12/11/2016 17:56', 'dd/mm/yyyy hh:mm');
 INSERT INTO StationLocation (IdLocation, EndStationName, EndDate)
-VALUES (2, 'Austerlitz', TO_DATE('07/11/2016 15:26', 'dd/mm/yyyy hh:mm');
+VALUES (2, 'Austerlitz', TO_DATE('07/11/2016 21:26', 'dd/mm/yyyy hh:mm');
 
 -- StationClass ################################################################
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
