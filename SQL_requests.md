@@ -4,6 +4,8 @@ Everything seems to work
 
 Facturation d'une location
 --------------------------
+Explication FORUM: Il s'agit ici de calculer le montant de la facture correspondant à une location qui se termine. La facturation des anciennes locations n'est pas indispensable.
+
 Input : idLocationInput
 Output : StartDate, MaxDuration, HourlyPrice, Deposit
 	SELECT StartDate, MaxDuration, HourlyPrice, Deposit
@@ -14,6 +16,9 @@ Output : StartDate, MaxDuration, HourlyPrice, Deposit
 
 Temps moyen d'utilisation par véhicule par mois
 -----------------------------------------------
+Explication FORUM: Il s'agit de calculer la durée de location d'un véhicule durant un mois calendaire donné.
+
+VERSION 1
 Input : null
 Output : tuples (Month/Year, ID of the vehicle, average time of use)
 	SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM'),
@@ -24,8 +29,21 @@ Output : tuples (Month/Year, ID of the vehicle, average time of use)
 	AND Vehicle.IdVehicle = Location.IdVehicle
 	GROUP BY to_char(Location.StartDate, 'YYYY-MM'), Vehicle.IdVehicle;
 
+VERSION 2
+SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS Month,
+		Vehicle.IdVehicle AS IdVehicle,
+		SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageDuration,
+		COUNT(Location.IdLocation) AS NbLocation
+FROM Location, StationLocation, Vehicle
+WHERE Location.IdLocation = StationLocation.IdLocation
+AND Vehicle.IdVehicle = Location.IdVehicle
+GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.IdVehicle;
+
 Temps moyen d'utilisation par catégorie de véhicule par mois
 ------------------------------------------------------------
+Explication FORUM: Il s'agit de calculer la durée de location moyenne d'un véhicule d'une catégorie donnée lors d'un mois calendaire donné.
+
+VERSION 1
 Input : null
 Output : tuples (Month/Year, name of the class, average time of use)
 	SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM'),
@@ -36,8 +54,21 @@ Output : tuples (Month/Year, name of the class, average time of use)
 	AND Vehicle.IdVehicle = Location.IdVehicle
 	GROUP BY to_char(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName;
 
+VERSION 2
+SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS Month,
+		Vehicle.ClassName AS VehicleClass,
+		SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageDuration,
+		COUNT(Location.IdLocation) AS NbLocation
+FROM Location, StationLocation, Vehicle
+WHERE Location.IdLocation = StationLocation.IdLocation
+AND Vehicle.IdVehicle = Location.IdVehicle
+GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName;
+
 Catégorie de véhicule la plus utilisée par tranche d'age de 10 ans
 ------------------------------------------------------------------
+Explication FORUM: Ce calcul prend en compte la durée de location des véhicules concernés.
+
+VERSION 1
 Input : StartDateInput, EndDateInput
 Output : tuples (name of the class, total time of use)
 	SELECT 	Vehicle.ClassName AS Class,
@@ -49,6 +80,14 @@ Output : tuples (name of the class, total time of use)
 	AND StationLocation.EndDate < EndDateInput
 	GROUP BY Vehicle.ClassName;
 
+VERSION 2
+SELECT MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS AverageDuration
+FROM Location, StationLocation, Vehicle
+WHERE Location.IdLocation = StationLocation.IdLocation
+AND Vehicle.IdVehicle = Location.IdVehicle
+AND Location.StartDate > add_months(CURRENT_DATE, -120)
+GROUP BY Vehicle.ClassName;
+
 Taux d'occupation des stations dans la journée
 ----------------------------------------------
 Input : null
@@ -58,4 +97,3 @@ Output : tuples (Station, occupancy rate)
 	WHERE Station.StationName = StationClass.StationName
 	AND Station.StationName = StationVehicle.StationName
 	GROUP BY Station.StationName;
-
