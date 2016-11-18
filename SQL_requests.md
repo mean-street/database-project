@@ -2,8 +2,8 @@ Fonctionnalités requises
 ========================
 Everything seems to work
 
-Facturation d'une location
---------------------------
+1 - Facturation d'une location
+------------------------------
 Explication FORUM: Il s'agit ici de calculer le montant de la facture correspondant à une location qui se termine. La facturation des anciennes locations n'est pas indispensable.
 
 VERSION 1
@@ -27,20 +27,21 @@ WHERE Location.IdLocation = 1
 AND		Location.IdVehicle = Vehicle.IdVehicle
 AND		VehicleClass.ClassName = Vehicle.ClassName;
 
-Temps moyen d'utilisation par véhicule par mois
------------------------------------------------
+
+2 - Temps moyen d'utilisation par véhicule par mois
+---------------------------------------------------
 Explication FORUM: Il s'agit de calculer la durée de location d'un véhicule durant un mois calendaire donné.
 
 VERSION 1
-Input : null
-Output : tuples (Month/Year, ID of the vehicle, average time of use)
-	SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM'),
-			Vehicle.IdVehicle,
+Input : MonthYearInput (format YYYY-MM)
+Output : tuples (ID of the vehicle, average time of use)
+	SELECT 	Vehicle.IdVehicle,
 			SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation)
 	FROM Location, StationLocation, Vehicle
 	WHERE Location.IdLocation = StationLocation.IdLocation
 	AND Vehicle.IdVehicle = Location.IdVehicle
-	GROUP BY to_char(Location.StartDate, 'YYYY-MM'), Vehicle.IdVehicle;
+	AND TO_CHAR(Location.StartDate, 'YYYY-MM') = MonthYearInput;
+	GROUP BY Vehicle.IdVehicle;
 
 VERSION 2
 SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS Month,
@@ -52,20 +53,20 @@ WHERE Location.IdLocation = StationLocation.IdLocation
 AND Vehicle.IdVehicle = Location.IdVehicle
 GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.IdVehicle;
 
-Temps moyen d'utilisation par catégorie de véhicule par mois
-------------------------------------------------------------
+3 - Temps moyen d'utilisation par catégorie de véhicule par mois
+----------------------------------------------------------------
 Explication FORUM: Il s'agit de calculer la durée de location moyenne d'un véhicule d'une catégorie donnée lors d'un mois calendaire donné.
 
 VERSION 1
-Input : null
-Output : tuples (Month/Year, name of the class, average time of use)
-	SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM'),
-			Vehicle.ClassName,
+Input : MonthYearInput (format YYYY-MM)
+Output : tuples (name of the class, average time of use)
+	SELECT 	Vehicle.ClassName,
 			SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation)
 	FROM Location, StationLocation, Vehicle
 	WHERE Location.IdLocation = StationLocation.IdLocation
 	AND Vehicle.IdVehicle = Location.IdVehicle
-	GROUP BY to_char(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName;
+	AND TO_CHAR(Location.StartDate, 'YYYY-MM') = MonthYearInput;
+	GROUP BY Vehicle.ClassName;
 
 VERSION 2
 SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS Month,
@@ -77,8 +78,8 @@ WHERE Location.IdLocation = StationLocation.IdLocation
 AND Vehicle.IdVehicle = Location.IdVehicle
 GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName;
 
-Catégorie de véhicule la plus utilisée par tranche d'age de 10 ans
-------------------------------------------------------------------
+4 - Catégorie de véhicule la plus utilisée par tranche d'age de 10 ans
+----------------------------------------------------------------------
 Explication FORUM: Ce calcul prend en compte la durée de location des véhicules concernés.
 
 VERSION 1
@@ -101,11 +102,10 @@ AND Vehicle.IdVehicle = Location.IdVehicle
 AND Location.StartDate > add_months(CURRENT_DATE, -120)
 GROUP BY Vehicle.ClassName;
 
-Taux d'occupation des stations dans la journée
-----------------------------------------------
+5 - Taux d'occupation des stations dans la journée
+--------------------------------------------------
 Explication FORUM: Il s'agit de calculer le rapport entre le nombre de places occupées (au maximum) et le nombre de places totales disponibles dans une station sur une journée.
 
-VERSION 1
 Input : null
 Output : tuples (Station, occupancy rate)
 	SELECT Station.StationName, COUNT(StationVehicle.IdVehicle)
