@@ -102,11 +102,35 @@ public class DataAccess {
 		}
 	}
 
-	public ArrayList<DecadeClass> getDecadeClass(){
+	public ArrayList<DailyStation> getDailyStation(){
 		try {
-			String query = "SELECT Vehicle.ClassName AS Class, MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS UseTime FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation	AND Vehicle.IdVehicle = Location.IdVehicle AND Location.StartDate > StartDateInputAND StationLocation.EndDate < EndDateInput GROUP BY Vehicle.ClassName";
+			String query = "SELECT Station.StationName, COUNT(StationVehicle.IdVehicle) FROM Station, StationVehicle, StationClass WHERE Station.StationName = StationClass.StationName	AND Station.StationName = StationVehicle.StationName GROUP BY Station.StationName";
 			Statement statement = this.connection.createStatement();
 			ResultSet result_set = statement.executeQuery(query);
+
+			ArrayList<DailyStation> result_list = new ArrayList<DailyStation>();
+			while(result_set.next()){
+				DailyStation daily_station = new DailyStation();
+				daily_station.setStationName(result_set.getString(1));
+				daily_station.setOccupancyRate(result_set.getFloat(2));
+				result_list.add(daily_station);
+			}
+			result_set.close();
+			statement.close();
+			return result_list;
+		} catch(SQLException e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public ArrayList<DecadeClass> getDecadeClass(Date startDateInput,Date endDateInput){
+		try {
+			String query = "SELECT Vehicle.ClassName AS ClassName, MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS UseTime FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation	AND Vehicle.IdVehicle = Location.IdVehicle AND Location.StartDate > ? AND StationLocation.EndDate < ? GROUP BY Vehicle.ClassName";
+			PreparedStatement statement = this.connection.prepareStatement(query);
+			statement.setDate(1,startDateInput);
+			statement.setDate(2,endDateInput);
+			ResultSet result_set = statement.executeQuery();
 
 			ArrayList<DecadeClass> result_list = new ArrayList<DecadeClass>();
 			while(result_set.next()){
