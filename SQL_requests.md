@@ -1,7 +1,7 @@
 Fonctionnalités requises
 ========================
 
-Facturation d'une location => OK
+Facturation d'une location
 --------------------------
 Input : idLocationInput
 Output : StartDate, MaxDuration, HourlyPrice, Deposit
@@ -11,19 +11,19 @@ Output : StartDate, MaxDuration, HourlyPrice, Deposit
 	AND VehicleClass.ClassName = Vehicle.ClassName
 	AND Location.IdVehicle = Vehicle.IdVehicle;
 
-Temps moyen d'utilisation par véhicule par mois => OK
+Temps moyen d'utilisation par véhicule par mois
 -----------------------------------------------
 Input : null
 Output : tuples (Month/Year, ID of the vehicle, average time of use)
 	SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS StartDate,
 			Vehicle.IdVehicle AS Vehicle,
-			COUNT(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse
+			SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse
 	FROM Location, StationLocation, Vehicle
 	WHERE Location.IdLocation = StationLocation.IdLocation
 	AND Vehicle.IdVehicle = Location.IdVehicle
 	GROUP BY to_char(Location.StartDate, 'YYYY-MM'), Vehicle.IdVehicle;
 
-Temps moyen d'utilisation par catégorie de véhicule par mois => OK
+Temps moyen d'utilisation par catégorie de véhicule par mois
 ------------------------------------------------------------
 Input : null
 Output : tuples (Month/Year, name of the class, average time of use)
