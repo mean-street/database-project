@@ -13,6 +13,7 @@ public class MonthlyVehicle {
 	 *  @param date Considered month
 	 *  @param vehicleId Id of the vehicle
 	 *  @param averageTime Average usage time
+	 *  @param locationCount Number of time the vehicle was rent
 	 **/
 	public MonthlyVehicle(String date,int vehicleId,float averageTime,int locationCount){
 		this.date = date;

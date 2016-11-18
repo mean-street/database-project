@@ -112,7 +112,7 @@ public class DataAccess {
 	
 	public ArrayList<MonthlyClass> getMonthlyClass(){
 		try {
-			String query = "SELECT TO_CHAR(Location.StartDate,'YYYY-MM') AS StartDate, Vehicle.ClassName AS VehicleClass, SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse	FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle GROUP BY to_char(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName";
+			String query = "SELECT TO_CHAR(Location.StartDate, 'YYYY-MM') AS Month, Vehicle.ClassName AS VehicleClass, SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageDuration, COUNT(Location.IdLocation) AS NbLocation FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName";
 			Statement statement = this.connection.createStatement();
 			ResultSet result_set = statement.executeQuery(query);
 
@@ -122,6 +122,7 @@ public class DataAccess {
 				monthly_class.setDate(result_set.getString(1));
 				monthly_class.setClassName(result_set.getString(2));
 				monthly_class.setAverageTime(result_set.getFloat(3));
+				monthly_class.setLocationCount(result_set.getInt(4));
 				result_list.add(monthly_class);
 			}
 			result_set.close();
@@ -157,7 +158,8 @@ public class DataAccess {
 
 	public ArrayList<DecadeClass> getDecadeClass(Date startDateInput,Date endDateInput){
 		try {
-			String query = "SELECT Vehicle.ClassName AS ClassName, MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS UseTime FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation	AND Vehicle.IdVehicle = Location.IdVehicle AND Location.StartDate > ? AND StationLocation.EndDate < ? GROUP BY Vehicle.ClassName";
+			//String query = "SELECT Vehicle.ClassName AS ClassName, MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS UseTime FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation	AND Vehicle.IdVehicle = Location.IdVehicle AND Location.StartDate > ? AND StationLocation.EndDate < ? GROUP BY Vehicle.ClassName";
+			String query = "SELECT Vehicle.ClassName AS Class, MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS AverageDuration FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle AND Location.StartDate > add_months(CURRENT_DATE, -120) GROUP BY Vehicle.ClassName";
 			PreparedStatement statement = this.connection.prepareStatement(query);
 			statement.setDate(1,startDateInput);
 			statement.setDate(2,endDateInput);
