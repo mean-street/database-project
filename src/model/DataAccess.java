@@ -81,7 +81,7 @@ public class DataAccess {
 	
 	public ArrayList<MonthlyClass> getMonthlyClass(){
 		try {
-			String query = "SELECT TO_CHAR(Location.StartDate,'YYYY-MM') AS Date, Vehicle.ClassName AS VehicleClass, SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse	FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle GROUP BY to_char(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName";
+			String query = "SELECT TO_CHAR(Location.StartDate,'YYYY-MM') AS StartDate, Vehicle.ClassName AS VehicleClass, SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse	FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle GROUP BY to_char(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName";
 			Statement statement = this.connection.createStatement();
 			ResultSet result_set = statement.executeQuery(query);
 

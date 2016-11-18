@@ -15,7 +15,7 @@ Temps moyen d'utilisation par véhicule par mois => OK
 -----------------------------------------------
 Input : null
 Output : tuples (Month/Year, ID of the vehicle, average time of use)
-	SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS Date,
+	SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS StartDate,
 			Vehicle.IdVehicle AS Vehicle,
 			COUNT(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse
 	FROM Location, StationLocation, Vehicle
@@ -27,7 +27,7 @@ Temps moyen d'utilisation par catégorie de véhicule par mois => OK
 ------------------------------------------------------------
 Input : null
 Output : tuples (Month/Year, name of the class, average time of use)
-	SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS Date,
+	SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS StartDate,
 			Vehicle.ClassName AS VehicleClass,
 			SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse
 	FROM Location, StationLocation, Vehicle

@@ -15,10 +15,10 @@ public class Application {
 			System.out.println(monthly_utilisation.toString());
 		}
 
-		//ArrayList<MonthlyClass> monthly_class_list = model.getMonthlyClass();
-		//for(MonthlyClass monthly_class: monthly_class_list){
-			//System.out.println(monthly_class.toString());
-		//}
+		ArrayList<MonthlyClass> monthly_class_list = model.getMonthlyClass();
+		for(MonthlyClass monthly_class: monthly_class_list){
+			System.out.println(monthly_class.toString());
+		}
 
 		model.closeConnection();
 	}
