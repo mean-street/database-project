@@ -102,6 +102,28 @@ public class DataAccess {
 		}
 	}
 
+	public ArrayList<DecadeClass> getDecadeClass(){
+		try {
+			String query = "SELECT Vehicle.ClassName AS Class, MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS UseTime FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation	AND Vehicle.IdVehicle = Location.IdVehicle AND Location.StartDate > StartDateInputAND StationLocation.EndDate < EndDateInput GROUP BY Vehicle.ClassName";
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+
+			ArrayList<DecadeClass> result_list = new ArrayList<DecadeClass>();
+			while(result_set.next()){
+				DecadeClass decade_class = new DecadeClass();
+				decade_class.setClassName(result_set.getString(1));
+				decade_class.setAverageTime(result_set.getFloat(2));
+				result_list.add(decade_class);
+			}
+			result_set.close();
+			statement.close();
+			return result_list;
+		} catch(SQLException e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public int getMaxSpots(String station_name,String class_name){
 		try {
 			String query = "SELECT MaxSpots FROM StationClass WHERE StationName = ? and ClassName = ?";

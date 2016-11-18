@@ -1,15 +1,17 @@
+package controller;
+
 public class DecadeClass {
 	private String className;
-	private float usageTime;
+	private float averageTime;
 	
 
 	/** Constructor of DecadeClass 
 	 *  @param className Name of considered class
-	 *  @param usageTime Average usage time of specified vehicle class
+	 *  @param averageTime Average usage time of specified vehicle class
 	 **/
-	public DecadeClass(String className,float usageTime){
+	public DecadeClass(String className,float averageTime){
 		this.className = className;
-		this.usageTime = usageTime;
+		this.averageTime = averageTime;
 	}
 
 	/** Emptry constructor of DecadeClass */
@@ -27,19 +29,19 @@ public class DecadeClass {
 		return className;
 	}
 
-	/** @param usageTime Set usageTime of DecadeClass */
-	public void setUsageTime(float usageTime) {
-		this.usageTime = usageTime;
+	/** @param averageTime Set averageTime of DecadeClass */
+	public void setAverageTime(float averageTime) {
+		this.averageTime = averageTime;
 	}
 
-	/** @return usageTime */
-	public float getUsageTime() {
-		return usageTime;
+	/** @return averageTime */
+	public float getAverageTime() {
+		return averageTime;
 	}
 
 	/** @return Decade class as a data string */
 	@Override
 	public String toString(){
-		return "Class name: "+this.className+" Usage time: "+this.usageTime;
+		return "Class name: "+this.className+" Usage time: "+this.averageTime;
 	}
 }
