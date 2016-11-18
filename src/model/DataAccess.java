@@ -31,9 +31,40 @@ public class DataAccess {
 		}
 	}
 
+	public boolean checkLocationEndDate(int id_location){
+		try {
+			String query = "SELECT IdLocation FROM StationLocation WHERE IdLocation = ?";
+			PreparedStatement statement = this.connection.prepareStatement(query);
+			statement.setInt(1,id_location);
+			ResultSet result_set = statement.executeQuery();
+			boolean result = result_set.next();
+			result_set.close();
+			statement.close();
+			return result;
+		} catch(SQLException e){
+			e.printStackTrace();
+			return true;
+		}
+	}
+
+	public void insertStationLocation(int idLocation,String stationName,Date endDate){
+		try {
+			String query = "INSERT INTO StationLocation VALUES(?,?,?)";
+			PreparedStatement statement = this.connection.prepareStatement(query);
+			statement.setInt(1,idLocation);
+			statement.setString(2,stationName);
+			statement.setDate(3,endDate);
+			statement.executeUpdate();
+			this.connection.commit();
+			statement.close();
+		} catch(SQLException e){
+			e.printStackTrace();
+		}
+	}
+
 	public ArrayList<LocationBill> getLocationBill(int id_location){
 		try {
-			String query = "SELECT StartDate,MaxDuration,HourlyPrice,Deposit FROM VehicleClass,Vehicle,Location WHERE Location.IdLocation = ? AND VehicleClass.ClassName = Vehicle.ClassName AND Location.IdVehicle = Vehicle.IdVehicle";
+			String query = "SELECT 	Vehicle.IdVehicle, Vehicle.ClassName, CASE WHEN (CURRENT_DATE - Location.StartDate) > (VehicleClass.MaxDuration/24) THEN (CURRENT_DATE - Location.StartDate) * 24 * VehicleClass.HourlyPrice + VehicleClass.Deposit ELSE (CURRENT_DATE - Location.StartDate) * 24 * VehicleClass.HourlyPrice END AS Price FROM Location, Vehicle, VehicleClass WHERE Location.IdLocation = ? AND		Location.IdVehicle = Vehicle.IdVehicle AND VehicleClass.ClassName = Vehicle.ClassName";
 			PreparedStatement statement = this.connection.prepareStatement(query);
 			statement.setInt(1,id_location);
 			ResultSet result_set = statement.executeQuery();
@@ -41,10 +72,9 @@ public class DataAccess {
 			ArrayList<LocationBill> result_list = new ArrayList<LocationBill>();
 			while(result_set.next()){
 				LocationBill location_bill = new LocationBill();
-				location_bill.setDate(result_set.getDate(1));
-				location_bill.setMaxDuration(result_set.getInt(2));
-				location_bill.setHourlyPrice(result_set.getFloat(3));
-				location_bill.setDeposit(result_set.getFloat(4));
+				location_bill.setIdVehicle(result_set.getInt(1));
+				location_bill.setClassName(result_set.getString(2));
+				location_bill.setPrice(result_set.getFloat(3));
 				result_list.add(location_bill);
 			}
 			result_set.close();
@@ -58,7 +88,7 @@ public class DataAccess {
 
 	public ArrayList<MonthlyVehicle> getMonthlyVehicle(){
 		try {
-			String query = "SELECT TO_CHAR(Location.StartDate,'YYYY-MM') AS LocationDate, Vehicle.IdVehicle AS Vehicle,SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageTimeOfUse FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.IdVehicle";
+			String query = "SELECT TO_CHAR(Location.StartDate, 'YYYY-MM') AS Month, Vehicle.IdVehicle AS IdVehicle,	SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageDuration, COUNT(Location.IdLocation) AS NbLocation FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.IdVehicle";
 			Statement statement = this.connection.createStatement();
 			ResultSet result_set = statement.executeQuery(query);
 
@@ -68,6 +98,7 @@ public class DataAccess {
 				monthly_vehicle.setDate(result_set.getString(1));
 				monthly_vehicle.setVehicleId(result_set.getInt(2));
 				monthly_vehicle.setAverageTime(result_set.getFloat(3));
+				monthly_vehicle.setLocationCount(result_set.getInt(4));
 				result_list.add(monthly_vehicle);
 			}
 			result_set.close();

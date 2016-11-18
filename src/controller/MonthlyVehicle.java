@@ -6,6 +6,7 @@ public class MonthlyVehicle {
 	private String date;
 	private int vehicleId;
 	private float averageTime;
+	private int locationCount;
 	
 
 	/** Constructor of MonthlyVehicle 
@@ -13,11 +14,11 @@ public class MonthlyVehicle {
 	 *  @param vehicleId Id of the vehicle
 	 *  @param averageTime Average usage time
 	 **/
-	public MonthlyVehicle(String date,int vehicleId,float averageTime){
-
+	public MonthlyVehicle(String date,int vehicleId,float averageTime,int locationCount){
 		this.date = date;
 		this.vehicleId = vehicleId;
 		this.averageTime = averageTime;
+		this.locationCount = locationCount;
 	}
 
 	/** Emptry constructor of MonthlyVehicle */
@@ -55,9 +56,19 @@ public class MonthlyVehicle {
 		return averageTime;
 	}
 
+	/** @return locationCount */
+	public int getLocationCount(){
+		return locationCount;
+	}
+
+	/** @param locationCount Set locationCount of MonthlyVehicle */
+	public void setLocationCount(int locationCount){
+		this.locationCount = locationCount;
+	}
+
 	/** @return String with values of every field */
 	@Override
 	public String toString(){
-		return "Date: "+this.date+" VehicleId: "+this.vehicleId+" Average time: "+this.averageTime;
+		return "Date: "+this.date+" VehicleId: "+this.vehicleId+" Average time: "+this.averageTime+" Location count: "+this.locationCount;
 	}
 }

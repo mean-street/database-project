@@ -8,9 +8,10 @@ public class Vehlib {
     public static void main(String[] args){ 
         IO io = new IO();
         DataAccess model = new DataAccess();
-        Action currentAction = Action.NOTHING;
-        boolean running = true;
+		DateParser dateParser = new DateParser();
+		Action currentAction = Action.NOTHING;
 
+        boolean running = true;
         while(running) {
             switch(currentAction) {
                 case QUIT:
@@ -20,12 +21,22 @@ public class Vehlib {
                     currentAction = io.askForAction();
                 break;
                 case HIRE_BILLING:
-					ArrayList<LocationBill> location_list = model.getLocationBill(1);
-					IO.startBlock();
-					for(LocationBill location: location_list){
-						System.out.println(location.toString());
+					int locationId = io.askForHireId();
+					if(!model.checkLocationEndDate(locationId)){
+						String stationName = io.askForStationName();
+						Date endDate = dateParser.getSQLCurrentDate();
+						model.insertStationLocation(locationId,stationName,endDate);
+
+						ArrayList<LocationBill> location_list = model.getLocationBill(locationId);
+						IO.startBlock();
+						for(LocationBill location: location_list){
+							System.out.println(location.toString());
+						}
+						IO.endBlock();
 					}
-					IO.endBlock();
+					else {
+						System.out.println("Location déjà payée.");
+					}
                     currentAction = Action.NOTHING;
                 break;
                 case VEHICLE_MEAN_USE_TIME:
@@ -47,7 +58,9 @@ public class Vehlib {
                     currentAction = Action.NOTHING;
                 break;
                 case MOST_USED_CATEGORY:
-					ArrayList<DecadeClass> decade_class_list = model.getDecadeClass(new Date(2006,3,14),new Date(2016,11,8));
+					Date startDate = dateParser.getSQLDate(io.askForStartDate());
+					Date endDate = dateParser.getSQLDate(io.askForEndDate());
+					ArrayList<DecadeClass> decade_class_list = model.getDecadeClass(startDate,endDate);
 					IO.startBlock();
 					for(DecadeClass decade_class: decade_class_list){
 						System.out.println(decade_class.toString());

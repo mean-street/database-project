@@ -47,6 +47,21 @@ public class IO {
         return id;
     }
 
+    public String askForStationName() {
+        String stationName = this.console.readLine("Nom de la station : ");
+        return stationName;
+    }
+
+	public String askForStartDate() {
+        String date = this.console.readLine("Debut de la période (YYYY-MM-DD): ");
+        return date;
+    }
+
+	public String askForEndDate() {
+        String date = this.console.readLine("Fin de la période (YYYY-MM-DD): ");
+        return date;
+    }
+
     public void printHireBill(int bill) {
         System.out.println("Facturation : " + bill);
     }

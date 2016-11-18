@@ -1,73 +1,60 @@
 package controller;
 
-import java.sql.Date;
-
 public class LocationBill {
-	private Date date;
-	private int maxDuration;
-	private float hourlyPrice;
-	private float deposit;
+	private int idVehicle;
+	private String className;
+	private float price;
 	
 
 	/** Constructor of LocationBill
-	 *  @param date Date of location
-	 *  @param maxDuration Maximum amount of time of location
-	 *  @param hourlyPrice Hourly price of the location
-	 *  @param deposit Deposit of the location
+	 *  @param idVehicle Id of considered vehicle
+	 *  @param className Class name of considered vehicle
+	 *  @param price Total price of location
 	 **/
-	public LocationBill(Date date,int maxDuration,float hourlyPrice,float deposit){
-		this.date = date;
-		this.maxDuration = maxDuration;
-		this.hourlyPrice = hourlyPrice;
-		this.deposit = deposit;
+	public LocationBill(int idVehicle,String className,float price){
+		this.idVehicle = idVehicle;
+		this.className = className;
+		this.price = price;
 	}
 
+	/** Empty constructor of LocationBill */
 	public LocationBill(){
 		;
 	}
 
-	/** @param date Set date of LocationBill */
-	public void setDate(Date date) {
-		this.date = date;
+	/** @param idVehicle Set idVehicle of LocationBill */
+	public void setIdVehicle(int idVehicle) {
+		this.idVehicle = idVehicle;
 	}
 
-	/** @return date */
-	public Date getDate() {
-		return date;
+	/** @return idVehicle */
+	public int getIdVehicle() {
+		return idVehicle;
 	}
 
-	/** @param maxDuration Set maxDuration of LocationBill */
-	public void setMaxDuration(int maxDuration) {
-		this.maxDuration = maxDuration;
+	/** @param className Set className of LocationBill */
+	public void setClassName(String className) {
+		this.className = className;
 	}
 
-	/** @return maxDuration */
-	public int getMaxDuration() {
-		return maxDuration;
+	/** @return className */
+	public String getClassName() {
+		return className;
 	}
 
-	/** @param hourlyPrice Set hourlyPrice of LocationBill */
-	public void setHourlyPrice(float hourlyPrice) {
-		this.hourlyPrice = hourlyPrice;
+	/** @param price Set price of LocationBill */
+	public void setPrice(float price) {
+		this.price = price;
 	}
 
-	/** @return hourlyPrice */
-	public float getHourlyPrice() {
-		return hourlyPrice;
+	/** @return price */
+	public float getPrice() {
+		return price;
 	}
 
-	/** @param deposit Set deposit of LocationBill */
-	public void setDeposit(float deposit) {
-		this.deposit = deposit;
-	}
-
-	/** @return deposit */
-	public float getDeposit() {
-		return deposit;
-	}
-
-	/** @return LocationBill as a String */
+	/** @return Location as a data string */
+	@Override
 	public String toString(){
-		return "Date: "+this.date+" Max duration: "+this.maxDuration+" Hourly price: "+this.hourlyPrice+" Deposit: "+this.deposit;
+		return "Id of vehicle: "+this.idVehicle+" Class name: "+this.className+" Price: "+this.price;
 	}
 }
