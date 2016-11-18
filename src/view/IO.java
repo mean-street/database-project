@@ -5,12 +5,16 @@ import java.io.Console;
 public class IO {
     protected Console console = System.console();
 
-    /* 
-     * Inputs
-     */
+	public static void startBlock(){
+		System.out.println('\n'+"-------------------------------------------------------------------------------");
+	}
+
+	public static void endBlock(){
+		System.out.println("-------------------------------------------------------------------------------"+'\n');
+	}
+
     public Action askForAction() {
         int action = -1;
-
         System.out.println(
             "Les actions possibles sont les suivantes :\n" +
             "\t0. Quitter\n" +
@@ -23,36 +27,26 @@ public class IO {
 
         while(action < 0 || action >= Action.values().length - 1) {
             try {
-                action = Integer.parseInt(this.console.readLine(
-                    "Sélectionner une action [0/1/2/3/4/5] : "
-                ));
+                action = Integer.parseInt(this.console.readLine("Sélectionner une action [0/1/2/3/4/5] : "));
             } catch(NumberFormatException e) {
                 action = -1;
             }
         }
-
         return Action.values()[action];
     }
 
     public int askForHireId() {
         int id = -1;
-        
         while(id < 0) {
             try {
-                id = Integer.parseInt(this.console.readLine(
-                    "Identifiant de la location : "
-                ));
+                id = Integer.parseInt(this.console.readLine("Identifiant de la location : "));
             } catch(NumberFormatException e) {
                 id = -1;
             }
         }
- 
         return id;
     }
 
-    /* 
-     * Outputs
-     */
     public void printHireBill(int bill) {
         System.out.println("Facturation : " + bill);
     }
