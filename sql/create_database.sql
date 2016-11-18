@@ -1,14 +1,5 @@
 -- DROP all tables
-DROP TABLE UserClassIllimitedRate PURGE;
-DROP TABLE UserClassLimitedRate PURGE;
-DROP TABLE StationVehicle PURGE;
-DROP TABLE StationLocation PURGE;
-DROP TABLE StationClass PURGE;
-DROP TABLE Location PURGE;
-DROP TABLE Subscriber PURGE;
-DROP TABLE Vehicle PURGE;
-DROP TABLE VehicleClass PURGE;
-DROP TABLE Station PURGE;
+@drop_database
 
 -- CREATE or RECREATE all tables
 CREATE TABLE Subscriber(
@@ -30,7 +21,7 @@ CREATE TABLE VehicleClass(
 );
 
 CREATE TABLE Vehicle(
-	IdVehicle INTEGER PRIMARY KEY NOT NULL,
+	IdVehicle NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
 	ClassName VARCHAR(20) NOT NULL,
 	Seats INTEGER NOT NULL,
 	CONSTRAINT fk_VehicleClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
@@ -39,11 +30,11 @@ CREATE TABLE Vehicle(
 
 CREATE TABLE Station(
 	StationName VARCHAR(20) PRIMARY KEY NOT NULL,
-	StationAddress VARCHAR(20) NOT NULL
+	StationAddress VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Location(
-	IdLocation INTEGER PRIMARY KEY NOT NULL,
+	IdLocation NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
 	StartStationName VARCHAR(20) NOT NULL,
 	CreditCard VARCHAR(30) NOT NULL,
 	IdVehicle INTEGER NOT NULL,
@@ -77,7 +68,7 @@ CREATE TABLE UserClassLimitedRate(
 );
 
 CREATE TABLE StationVehicle(
-	IdVehicle INTEGER PRIMARY KEY NOT NULL,
+	IdVehicle NUMBER NOT NULL,
 	StationName VARCHAR(20) NOT NULL,
 	CONSTRAINT fk_StationVehicleVehicle FOREIGN KEY(IdVehicle) REFERENCES Vehicle(IdVehicle),
 	CONSTRAINT fk_StationVehicleStation FOREIGN KEY(StationName) REFERENCES Station(StationName)
@@ -102,16 +93,71 @@ CREATE TABLE StationClass(
 );
 
 -- INSERTION
--- VehicleClass
--- INSERT INTO VehicleClass (ClassName, MaxDuration, HourlyPrice, Deposit) VALUES ('Voiture', 20, 15.0, 300.0);
+@inserts_database
 
--- Vehicle
---INSERT INTO Vehicle (IdVehicle, ClassName, Seat) VALUES (20, 15.0, 300.0);
+-- Facturation d'une location
+SELECT 	Vehicle.IdVehicle,
+				Vehicle.ClassName,
+				CASE WHEN (CURRENT_DATE - Location.StartDate) > (VehicleClass.MaxDuration/24)
+						 THEN (CURRENT_DATE - Location.StartDate) * 24 * VehicleClass.HourlyPrice + VehicleClass.Deposit
+						 ELSE (CURRENT_DATE - Location.StartDate) * 24 * VehicleClass.HourlyPrice
+						 END AS Price
+FROM Location, Vehicle, VehicleClass
+WHERE Location.IdLocation = 1
+AND		Location.IdVehicle = Vehicle.IdVehicle
+AND		VehicleClass.ClassName = Vehicle.ClassName;
+
+-- Temps moyen d'utilisation par véhicule par mois
+SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS Month,
+		Vehicle.IdVehicle AS IdVehicle,
+		SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageDuration,
+		COUNT(Location.IdLocation) AS NbLocation
+FROM Location, StationLocation, Vehicle
+WHERE Location.IdLocation = StationLocation.IdLocation
+AND Vehicle.IdVehicle = Location.IdVehicle
+GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.IdVehicle;
+
+-- Temps moyen d'utilisation par catégorie de véhicule par mois
+SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS Month,
+		Vehicle.ClassName AS VehicleClass,
+		SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageDuration,
+		COUNT(Location.IdLocation) AS NbLocation
+FROM Location, StationLocation, Vehicle
+WHERE Location.IdLocation = StationLocation.IdLocation
+AND Vehicle.IdVehicle = Location.IdVehicle
+GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName;
+
+-- Catégorie de véhicule la plus utilisée par tranche d'age de 10 ans
+SELECT 	Vehicle.ClassName,
+				SUM(StationLocation.EndDate - Location.StartDate) AS AverageDuration
+FROM Location, StationLocation, Vehicle
+WHERE Location.IdLocation = StationLocation.IdLocation
+AND Vehicle.IdVehicle = Location.IdVehicle
+AND Location.StartDate > add_months(CURRENT_DATE, -120)
+GROUP BY Vehicle.ClassName;
+
+SELECT 	MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS AverageDuration
+FROM Location, StationLocation, Vehicle
+WHERE Location.IdLocation = StationLocation.IdLocation
+AND Vehicle.IdVehicle = Location.IdVehicle
+AND Location.StartDate > add_months(CURRENT_DATE, -120)
+GROUP BY Vehicle.ClassName;
+
+-- Taux d'occupation des stations dans la journée (PAS FINI)
+SELECT 	Location.IdVehicle,
+				Location.IdLocation,
+				StationLocation.EndStationName,
+				StationLocation.EndDate
+FROM	Location, StationLocation
+WHERE Location.IdLocation = StationLocation.IdLocation
+AND		StationLocation.EndStationName = 'Austerlitz'
+ORDER BY 4;
+
+SELECT	Location.IdVehicle,
+				'15-NOV-16'
+FROM 	Location, StationLocation
+WHERE	Location.IdLocation = StationLocation.IdLocation
+AND		StationLocation.EndStationName = 'Austerlitz'
+AND		StationLocation.EndDate < TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi');
 
 -- VERIFIER LES CONTRAINTES AVANT DE D'EXECUTER LES FONCTIONNALITES
-
--- IdVehicle INTEGER PRIMARY KEY NOT NULL,
--- ClassName VARCHAR(20) NOT NULL,
--- Seats INTEGER,
--- CONSTRAINT fk_VehicleClassName FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
--- CONSTRAINT ck_Seats CHECK (Seats > 0)

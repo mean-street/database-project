@@ -6,6 +6,7 @@ Facturation d'une location
 --------------------------
 Explication FORUM: Il s'agit ici de calculer le montant de la facture correspondant à une location qui se termine. La facturation des anciennes locations n'est pas indispensable.
 
+VERSION 1
 Input : idLocationInput
 Output : StartDate, MaxDuration, HourlyPrice, Deposit
 	SELECT StartDate, MaxDuration, HourlyPrice, Deposit
@@ -13,6 +14,18 @@ Output : StartDate, MaxDuration, HourlyPrice, Deposit
 	WHERE Location.IdLocation = idLocationInput
 	AND VehicleClass.ClassName = Vehicle.ClassName
 	AND Location.IdVehicle = Vehicle.IdVehicle;
+
+VERSION 2
+SELECT 	Vehicle.IdVehicle,
+				Vehicle.ClassName,
+				CASE WHEN (CURRENT_DATE - Location.StartDate) > (VehicleClass.MaxDuration/24)
+						 THEN (CURRENT_DATE - Location.StartDate) * 24 * VehicleClass.HourlyPrice + VehicleClass.Deposit
+						 ELSE (CURRENT_DATE - Location.StartDate) * 24 * VehicleClass.HourlyPrice
+						 END AS Price
+FROM Location, Vehicle, VehicleClass
+WHERE Location.IdLocation = 1
+AND		Location.IdVehicle = Vehicle.IdVehicle
+AND		VehicleClass.ClassName = Vehicle.ClassName;
 
 Temps moyen d'utilisation par véhicule par mois
 -----------------------------------------------
@@ -90,6 +103,9 @@ GROUP BY Vehicle.ClassName;
 
 Taux d'occupation des stations dans la journée
 ----------------------------------------------
+Explication FORUM: Il s'agit de calculer le rapport entre le nombre de places occupées (au maximum) et le nombre de places totales disponibles dans une station sur une journée.
+
+VERSION 1
 Input : null
 Output : tuples (Station, occupancy rate)
 	SELECT Station.StationName, COUNT(StationVehicle.IdVehicle)
@@ -97,3 +113,6 @@ Output : tuples (Station, occupancy rate)
 	WHERE Station.StationName = StationClass.StationName
 	AND Station.StationName = StationVehicle.StationName
 	GROUP BY Station.StationName;
+
+VERSION 2
+A FINIR
