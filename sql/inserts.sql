@@ -54,6 +54,8 @@ INSERT INTO Location (IdLocation, StartStationName, CreditCard, IdVehicle, Start
 VALUES (9, 'Chatelet', 004, 3, TO_DATE('11/01/2005 11:31', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO Location (IdLocation, StartStationName, CreditCard, IdVehicle, StartDate)
 VALUES (10, 'Austerlitz', 002, 5, TO_DATE('29/08/2006 16:55', 'dd/mm/yyyy hh24:mi'));
+INSERT INTO Location (IdLocation, StartStationName, CreditCard, IdVehicle, StartDate)
+VALUES (11, 'JeanJaures', 002, 2, TO_DATE('08/09/2015 12:17', 'dd/mm/yyyy hh24:mi'));
 
 -- UserClassIllimitedRate ######################################################
 INSERT INTO UserClassIllimitedRate (CreditCard, ClassName, Duration, StartDate, Price)
@@ -76,13 +78,15 @@ VALUES (2, 'Austerlitz', TO_DATE('07/11/2016 15:26', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO StationLocation (IdLocation, EndStationName, EndDate)
 VALUES (6, 'JeanJaures', TO_DATE('15/03/2015 21:40', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO StationLocation (IdLocation, EndStationName, EndDate)
-VALUES (7, 'Chatelet', TO_DATE('05/09/2015 16:30', 'dd/mm/yyyy hh24:mi'));
+VALUES (7, 'Chatelet', TO_DATE('05/09/2015 18:30', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO StationLocation (IdLocation, EndStationName, EndDate)
 VALUES (8, 'Austerlitz', TO_DATE('05/12/2015 18:02', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO StationLocation (IdLocation, EndStationName, EndDate)
 VALUES (9, 'Austerlitz', TO_DATE('13/01/2005 11:21', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO StationLocation (IdLocation, EndStationName, EndDate)
 VALUES (10, 'JeanJaures', TO_DATE('30/08/2006 21:21', 'dd/mm/yyyy hh24:mi'));
+INSERT INTO StationLocation (IdLocation, EndStationName, EndDate)
+VALUES (11, 'Chatelet', TO_DATE('10/09/2015 18:23', 'dd/mm/yyyy hh24:mi'));
 
 -- StationClass ################################################################
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
