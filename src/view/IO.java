@@ -52,8 +52,28 @@ public class IO {
         return stationName;
     }
 
+    public String askForFirstname() {
+        String firstname = this.console.readLine("Prénom : ");
+        return firstname;
+    }
+
+    public String askForLastname() {
+        String lastname = this.console.readLine("Nom de famille : ");
+        return lastname;
+    }
+
+    public String askForAddress() {
+        String address = this.console.readLine("Adresse : ");
+        return address;
+    }
+
 	public String askForStartDate() {
         String date = this.console.readLine("Debut de la période (YYYY-MM-DD): ");
+        return date;
+    }
+
+	public String askForStartMonth() {
+        String date = this.console.readLine("Debut de la période (YYYY-MM): ");
         return date;
     }
 
