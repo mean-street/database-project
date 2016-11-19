@@ -1,5 +1,6 @@
 package model;
 
+import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.sql.*;
 import controller.*;
@@ -47,7 +48,7 @@ public class DataAccess {
 		}
 	}
 
-	public void insertStationLocation(int idLocation,String stationName,Date endDate){
+	public void insertStationLocation(int idLocation,String stationName,Date endDate) throws IllegalArgumentException {
 		try {
 			String query = "INSERT INTO StationLocation VALUES(?,?,?)";
 			PreparedStatement statement = this.connection.prepareStatement(query);
@@ -58,7 +59,7 @@ public class DataAccess {
 			this.connection.commit();
 			statement.close();
 		} catch(SQLException e){
-			e.printStackTrace();
+			throw new IllegalArgumentException();
 		}
 	}
 
@@ -156,14 +157,12 @@ public class DataAccess {
 		}
 	}
 
-	public ArrayList<DecadeClass> getDecadeClass(Date startDateInput,Date endDateInput){
+	public ArrayList<DecadeClass> getDecadeClass(){
 		try {
 			//String query = "SELECT Vehicle.ClassName AS ClassName, MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS UseTime FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation	AND Vehicle.IdVehicle = Location.IdVehicle AND Location.StartDate > ? AND StationLocation.EndDate < ? GROUP BY Vehicle.ClassName";
 			String query = "SELECT Vehicle.ClassName AS Class, MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS AverageDuration FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle AND Location.StartDate > add_months(CURRENT_DATE, -120) GROUP BY Vehicle.ClassName";
-			PreparedStatement statement = this.connection.prepareStatement(query);
-			statement.setDate(1,startDateInput);
-			statement.setDate(2,endDateInput);
-			ResultSet result_set = statement.executeQuery();
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
 
 			ArrayList<DecadeClass> result_list = new ArrayList<DecadeClass>();
 			while(result_set.next()){

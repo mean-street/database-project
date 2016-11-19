@@ -1,6 +1,7 @@
 import view.*;
 import model.*;
 import controller.*;
+import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.sql.Date;
 
@@ -23,19 +24,22 @@ public class Vehlib {
                 case HIRE_BILLING:
 					int locationId = io.askForHireId();
 					if(!model.checkLocationEndDate(locationId)){
-						String stationName = io.askForStationName();
-						Date endDate = dateParser.getSQLCurrentDate();
-						model.insertStationLocation(locationId,stationName,endDate);
-
-						ArrayList<LocationBill> location_list = model.getLocationBill(locationId);
-						IO.startBlock();
-						for(LocationBill location: location_list){
-							System.out.println(location.toString());
+						try {
+							String stationName = io.askForStationName();
+							Date endDate = dateParser.getSQLCurrentDate();
+							model.insertStationLocation(locationId,stationName,endDate);
+							ArrayList<LocationBill> location_list = model.getLocationBill(locationId);
+							IO.startBlock();
+							for(LocationBill location: location_list){
+								System.out.println(location.toString());
+							}
+							IO.endBlock();
+						} catch(IllegalArgumentException e){
+							System.out.println("This station doesn't exist.\n");
 						}
-						IO.endBlock();
 					}
 					else {
-						System.out.println("Location déjà payée.");
+						System.out.println("Location déjà payée.\n");
 					}
                     currentAction = Action.NOTHING;
                 break;
@@ -58,9 +62,7 @@ public class Vehlib {
                     currentAction = Action.NOTHING;
                 break;
                 case MOST_USED_CATEGORY:
-					Date startDate = dateParser.getSQLDate(io.askForStartDate());
-					Date endDate = dateParser.getSQLDate(io.askForEndDate());
-					ArrayList<DecadeClass> decade_class_list = model.getDecadeClass(startDate,endDate);
+					ArrayList<DecadeClass> decade_class_list = model.getDecadeClass();
 					IO.startBlock();
 					for(DecadeClass decade_class: decade_class_list){
 						System.out.println(decade_class.toString());
