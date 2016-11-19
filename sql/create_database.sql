@@ -60,14 +60,15 @@ CREATE TABLE UserClassLimitedRate(
 );
 
 CREATE TABLE UserClassIllimitedRate(
-	CreditCard VARCHAR(30),
-	ClassName VARCHAR(20),
-	NbLocation INTEGER,
-	Price FLOAT,
+	CreditCard VARCHAR(30) NOT NULL,
+	ClassName VARCHAR(20) NOT NULL,
+	NbLocation INTEGER NOT NULL,
+	Price FLOAT NOT NULL,
 	CONSTRAINT pk_UserClassIllimitedRate PRIMARY KEY(CreditCard,ClassName),
 	CONSTRAINT fk_IllimitedRateUser FOREIGN KEY(CreditCard) REFERENCES Subscriber(CreditCard),
 	CONSTRAINT fk_IllimitedRateClass FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
-	CONSTRAINT ck_UserClassIllimitedRatePrice CHECK (Price > 0)
+	CONSTRAINT ck_UCIRNbLocation CHECK (NbLocation > 0),
+	CONSTRAINT ck_UCIRPrice CHECK (Price > 0)
 );
 
 CREATE TABLE StationVehicle(
@@ -223,4 +224,76 @@ FROM (	SELECT 	StationLocation.EndStationName,
 											WHERE 	L.StartDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi')))
 GROUP BY EndStationName;
 
--- VERIFIER LES CONTRAINTES AVANT DE D'EXECUTER LES FONCTIONNALITES
+-- Vérifier que les vehicules garés ont le droit d'être garé là
+SELECT  StationVehicle.StationName,
+		Vehicle.ClassName,
+		StationClass.MaxSpots,
+		COUNT(Vehicle.IdVehicle)
+FROM    Vehicle, StationVehicle, StationClass
+WHERE   Vehicle.IdVehicle = StationVehicle.IdVehicle
+AND		StationVehicle.StationName = StationClass.StationName
+AND		StationClass.ClassName = Vehicle.ClassName
+GROUP BY StationVehicle.StationName, Vehicle.ClassName, StationClass.MaxSpots;
+
+-- 2) Vérifier que les stations où les véhicules sont garés sont cohérentes
+-- par rapport aux locations terminées
+SELECT 	Location.IdVehicle,
+		StationLocation.EndStationName,
+		StationVehicle.StationName
+FROM 	Location
+INNER JOIN StationLocation ON StationLocation.IdLocation = Location.IdLocation
+LEFT JOIN StationVehicle ON (StationVehicle.IdVehicle = Location.IdVehicle AND StationVehicle.StationName = StationLocation.EndStationName)
+WHERE	StationLocation.EndDate = (SELECT MAX(S.EndDate)
+									FROM 	StationLocation S, Location L
+									WHERE 	S.IdLocation = L.IdLocation
+									AND		L.IdVehicle = Location.IdVehicle)
+AND		Location.IdVehicle NOT IN (SELECT 	L.IdVehicle
+									FROM 	Location L
+									WHERE	L.IdLocation NOT IN (SELECT S.IdLocation
+																FROM	StationLocation S));
+
+-- Vérifier qu'il y a au plus un forfait par catégorie et par abonné
+SELECT	Subscriber.CreditCard,
+		UserClassLimitedRate.ClassName
+FROM	Subscriber, UserClassLimitedRate
+WHERE	UserClassLimitedRate.CreditCard = Subscriber.CreditCard
+AND		UserClassLimitedRate.ClassName IN (SELECT UCIR.ClassName
+											FROM UserClassIllimitedRate UCIR
+											WHERE UCIR.CreditCard = Subscriber.CreditCard);
+
+-- Vérifier qu'il n'y a pas de forfait terminer
+SELECT	Subscriber.CreditCard,
+		TO_CHAR(UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration, 'dd/mm/yyyy'),
+		CASE WHEN (UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration) < CURRENT_DATE
+			THEN 1
+			ELSE 0
+		END AS isFinished
+FROM	Subscriber, UserClassLimitedRate
+WHERE	UserClassLimitedRate.CreditCard = Subscriber.CreditCard;
+
+SELECT	Subscriber.CreditCard,
+		UserClassIllimitedRate.NbLocation,
+		CASE WHEN UserClassIllimitedRate.NbLocation <= 0
+			THEN 1
+			ELSE 0
+		END AS isFinished
+FROM	Subscriber, UserClassIllimitedRate
+WHERE	UserClassIllimitedRate.CreditCard = Subscriber.CreditCard;
+
+-- Pas deux locations pour le même vehicule en même temps
+SELECT 	Location.IdLocation,
+		Location.IdVehicle
+FROM 	Location
+WHERE	Location.IdVehicle IN (SELECT L.IdVehicle
+								FROM Location L, StationLocation SL
+								WHERE SL.IdLocation = L.IdLocation
+								AND L.IdLocation <> Location.IdLocation
+								AND	Location.StartDate > L.StartDate
+								AND	Location.StartDate < SL.EndDate)
+OR     Location.IdVehicle IN (SELECT L.IdVehicle
+								FROM Location L
+								WHERE L.IdLocation NOT IN (SELECT SL.IdLocation
+															FROM StationLocation SL)
+								AND L.IdLocation <> Location.IdLocation
+								AND	Location.StartDate > L.StartDate)
+ORDER BY 1;
