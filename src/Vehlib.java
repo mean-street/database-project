@@ -14,6 +14,7 @@ public class Vehlib {
 		Action currentAction = Action.NOTHING;
 		Date startDate,endDate;
 		String stationName,firstname,lastname,address;
+		String stringDate;
 
         boolean running = true;
         while(running) {
@@ -30,9 +31,10 @@ public class Vehlib {
 					firstname = io.askForFirstname();
 					lastname = io.askForLastname();
 					address = io.askForAddress();
-					endDate = dateParser.getSQLCurrentDate();
+					//endDate = dateParser.getSQLCurrentDate();
+					stringDate = dateParser.getCurrentStringDate();
 					try {
-						ArrayList<LocationBill> location_list = model.getLocationBill(locationId,stationName,endDate,firstname,lastname,address);
+						ArrayList<LocationBill> location_list = model.getLocationBill(locationId,stationName,stringDate,firstname,lastname,address);
 						if(location_list == null)
 							System.out.println("Location illimitée ===> rien à payer.");
 						else {

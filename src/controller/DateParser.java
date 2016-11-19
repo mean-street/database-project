@@ -21,7 +21,7 @@ public class DateParser {
 	/** Initialize current date to the one of the virtual machine and format is "YYYY-MM-DD" */
 	public DateParser(){
 		this.currentDate = new Date();
-		this.format = new SimpleDateFormat("YYYY-MM-DD");
+		this.format = new SimpleDateFormat("YYYY-MM-dd");
 	}
 
 	/** @param currentDate Set currentDate of DateParser */
@@ -32,6 +32,10 @@ public class DateParser {
 	/** @return currentDate */
 	public Date getCurrentDate() {
 		return currentDate;
+	}
+
+	public String getCurrentStringDate(){
+		return format.format(currentDate);
 	}
 
 	/** @return current date to SQL format */
