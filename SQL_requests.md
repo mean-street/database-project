@@ -35,12 +35,12 @@ Explication FORUM: Il s'agit de calculer la durée de location d'un véhicule du
 VERSION 1 => à implémenter
 Input : MonthYearInput (format YYYY-MM)
 Output : tuples (ID of the vehicle, average time of use)
-	SELECT 	Vehicle.IdVehicle,
+	SELECT 	Vehicle.IdVehicle,COUNT(Location.IdLocation),
 			SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation)
 	FROM Location, StationLocation, Vehicle
 	WHERE Location.IdLocation = StationLocation.IdLocation
 	AND Vehicle.IdVehicle = Location.IdVehicle
-	AND TO_CHAR(Location.StartDate, 'YYYY-MM') = MonthYearInput;
+	AND TO_CHAR(Location.StartDate, 'YYYY-MM') = MonthYearInput
 	GROUP BY Vehicle.IdVehicle;
 
 <!-- VERSION 2 -->
@@ -65,7 +65,7 @@ Output : tuples (name of the class, average time of use)
 	FROM Location, StationLocation, Vehicle
 	WHERE Location.IdLocation = StationLocation.IdLocation
 	AND Vehicle.IdVehicle = Location.IdVehicle
-	AND TO_CHAR(Location.StartDate, 'YYYY-MM') = MonthYearInput;
+	AND TO_CHAR(Location.StartDate, 'YYYY-MM') = MonthYearInput
 	GROUP BY Vehicle.ClassName;
 
 <!-- VERSION 2 -->

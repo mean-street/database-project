@@ -32,43 +32,78 @@ public class DataAccess {
 		}
 	}
 
-	public boolean checkLocationEndDate(int id_location){
+	public boolean checkLocationId(Statement statement,int idLocation) throws IllegalArgumentException {
 		try {
-			String query = "SELECT IdLocation FROM StationLocation WHERE IdLocation = ?";
-			PreparedStatement statement = this.connection.prepareStatement(query);
-			statement.setInt(1,id_location);
-			ResultSet result_set = statement.executeQuery();
+			String query = "SELECT IdLocation FROM StationLocation WHERE IdLocation = "+idLocation;
+			ResultSet result_set = statement.executeQuery(query);
 			boolean result = result_set.next();
 			result_set.close();
-			statement.close();
 			return result;
 		} catch(SQLException e){
-			e.printStackTrace();
-			return true;
-		}
-	}
-
-	public void insertStationLocation(int idLocation,String stationName,Date endDate) throws IllegalArgumentException {
-		try {
-			String query = "INSERT INTO StationLocation VALUES(?,?,?)";
-			PreparedStatement statement = this.connection.prepareStatement(query);
-			statement.setInt(1,idLocation);
-			statement.setString(2,stationName);
-			statement.setDate(3,endDate);
-			statement.executeUpdate();
-			this.connection.commit();
-			statement.close();
-		} catch(SQLException e){
+			try {
+				this.connection.rollback();
+			} catch(SQLException se){
+				System.out.println("This shouldn't happen !!!!!");
+				throw new IllegalArgumentException();
+			}
 			throw new IllegalArgumentException();
 		}
 	}
 
-	public ArrayList<LocationBill> getLocationBill(int id_location){
+	public boolean checkIllimitedLocation(Statement statement,int idLocation,String firstname,String lastname,String address) throws IllegalArgumentException {
 		try {
+			String query = "SELECT IdLocation FROM Location NATURAL JOIN UserClassIllimitedRate NATURAL JOING Subscriber WHERE IdLocation = "+idLocation+" AND Lastname = "+lastname+" AND Firstname = "+firstname+" AND Address = "+address;
+			ResultSet result_set = statement.executeQuery(query);
+			boolean result = result_set.next();
+			result_set.close();
+			return result;
+		} catch(SQLException e){
+			try {
+				this.connection.rollback();
+			} catch(SQLException se){
+				System.out.println("This shouldn't happen !!!!!");
+				throw new IllegalArgumentException();
+			}
+			throw new IllegalArgumentException();
+		}
+	}
+
+	public void insertStationLocation(Statement statement,int idLocation,String stationName,Date endDate) throws IllegalArgumentException {
+		try {
+			String query = "INSERT INTO StationLocation VALUES("+idLocation+",'"+stationName+"','"+endDate+"')";
+			System.out.println(query);
+			statement.executeUpdate(query);
+		} catch(SQLException e){
+			try {
+				e.printStackTrace();
+				this.connection.rollback();
+			} catch(SQLException se){
+				System.out.println("This shouldn't happen !!!!!");
+				throw new IllegalArgumentException();
+			}
+			throw new IllegalArgumentException();
+		}
+	}
+
+	public ArrayList<LocationBill> getLocationBill(int idLocation,String stationName,Date endDate,String firstname,String lastname,String address) throws IllegalArgumentException {
+		try {
+			Statement statement = this.connection.createStatement();
+			if(statement == null)
+			this.statement.executeQuery("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ");
+			if(this.checkLocationId(statement,idLocation)){
+				this.connection.commit();
+				throw new IllegalArgumentException();
+			}
+			this.insertStationLocation(statement,idLocation,stationName,endDate);
+			if(this.checkIllimitedLocation(statement,idLocation,firstname,lastname,address)){
+				this.connection.commit();
+				return null;
+			}
+
 			String query = "SELECT 	Vehicle.IdVehicle, Vehicle.ClassName, CASE WHEN (CURRENT_DATE - Location.StartDate) > (VehicleClass.MaxDuration/24) THEN (CURRENT_DATE - Location.StartDate) * 24 * VehicleClass.HourlyPrice + VehicleClass.Deposit ELSE (CURRENT_DATE - Location.StartDate) * 24 * VehicleClass.HourlyPrice END AS Price FROM Location, Vehicle, VehicleClass WHERE Location.IdLocation = ? AND		Location.IdVehicle = Vehicle.IdVehicle AND VehicleClass.ClassName = Vehicle.ClassName";
-			PreparedStatement statement = this.connection.prepareStatement(query);
-			statement.setInt(1,id_location);
-			ResultSet result_set = statement.executeQuery();
+			PreparedStatement preparedStatement = this.connection.prepareStatement(query);
+			preparedStatement.setInt(1,idLocation);
+			ResultSet result_set = preparedStatement.executeQuery();
 
 			ArrayList<LocationBill> result_list = new ArrayList<LocationBill>();
 			while(result_set.next()){
@@ -78,28 +113,36 @@ public class DataAccess {
 				location_bill.setPrice(result_set.getFloat(3));
 				result_list.add(location_bill);
 			}
+			this.connection.commit();
 			result_set.close();
-			statement.close();
+			preparedStatement.close();
 			return result_list;
 		} catch(SQLException e){
+			try {
+				this.connection.rollback();
+			} catch(SQLException se){
+				System.out.println("This shouldn't happen !!!!!");
+				throw new IllegalArgumentException();
+			}
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	public ArrayList<MonthlyVehicle> getMonthlyVehicle(){
+	public ArrayList<MonthlyVehicle> getMonthlyVehicle(String monthDate){
 		try {
-			String query = "SELECT TO_CHAR(Location.StartDate, 'YYYY-MM') AS Month, Vehicle.IdVehicle AS IdVehicle,	SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageDuration, COUNT(Location.IdLocation) AS NbLocation FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.IdVehicle";
-			Statement statement = this.connection.createStatement();
-			ResultSet result_set = statement.executeQuery(query);
+			String query = "SELECT Vehicle.IdVehicle,COUNT(Location.IdLocation),SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) FROM Location, StationLocation,Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle AND TO_CHAR(Location.StartDate, 'YYYY-MM') = ? GROUP BY Vehicle.IdVehicle";
+			PreparedStatement statement = this.connection.prepareStatement(query);
+			statement.setString(1,monthDate);
+			ResultSet result_set = statement.executeQuery();
 
 			ArrayList<MonthlyVehicle> result_list = new ArrayList<MonthlyVehicle>();
 			while(result_set.next()){
 				MonthlyVehicle monthly_vehicle = new MonthlyVehicle();
-				monthly_vehicle.setDate(result_set.getString(1));
-				monthly_vehicle.setVehicleId(result_set.getInt(2));
+				monthly_vehicle.setDate(monthDate);
+				monthly_vehicle.setVehicleId(result_set.getInt(1));
+				monthly_vehicle.setLocationCount(result_set.getInt(2));
 				monthly_vehicle.setAverageTime(result_set.getFloat(3));
-				monthly_vehicle.setLocationCount(result_set.getInt(4));
 				result_list.add(monthly_vehicle);
 			}
 			result_set.close();
@@ -111,19 +154,20 @@ public class DataAccess {
 		}
 	}
 	
-	public ArrayList<MonthlyClass> getMonthlyClass(){
+	public ArrayList<MonthlyClass> getMonthlyClass(String monthDate){
 		try {
-			String query = "SELECT TO_CHAR(Location.StartDate, 'YYYY-MM') AS Month, Vehicle.ClassName AS VehicleClass, SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) AS AverageDuration, COUNT(Location.IdLocation) AS NbLocation FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle GROUP BY TO_CHAR(Location.StartDate, 'YYYY-MM'), Vehicle.ClassName";
-			Statement statement = this.connection.createStatement();
-			ResultSet result_set = statement.executeQuery(query);
+			String query = "SELECT Vehicle.ClassName,COUNT(Location.IdLocation), SUM(StationLocation.EndDate - Location.StartDate) / COUNT(Location.IdLocation) FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle AND TO_CHAR(Location.StartDate, 'YYYY-MM') = ? GROUP BY Vehicle.ClassName";
+			PreparedStatement statement = this.connection.prepareStatement(query);
+			statement.setString(1,monthDate);
+			ResultSet result_set = statement.executeQuery();
 
 			ArrayList<MonthlyClass> result_list = new ArrayList<MonthlyClass>();
 			while(result_set.next()){
 				MonthlyClass monthly_class = new MonthlyClass();
-				monthly_class.setDate(result_set.getString(1));
-				monthly_class.setClassName(result_set.getString(2));
-				monthly_class.setAverageTime(result_set.getFloat(3));
-				monthly_class.setLocationCount(result_set.getInt(4));
+				monthly_class.setDate(monthDate);
+				monthly_class.setClassName(result_set.getString(1));
+				monthly_class.setAverageTime(result_set.getFloat(2));
+				monthly_class.setLocationCount(result_set.getInt(3));
 				result_list.add(monthly_class);
 			}
 			result_set.close();
@@ -135,34 +179,13 @@ public class DataAccess {
 		}
 	}
 
-	public ArrayList<DailyStation> getDailyStation(){
+	public ArrayList<DecadeClass> getDecadeClass(Date startDate){
 		try {
-			String query = "SELECT Station.StationName, COUNT(StationVehicle.IdVehicle) FROM Station, StationVehicle, StationClass WHERE Station.StationName = StationClass.StationName	AND Station.StationName = StationVehicle.StationName GROUP BY Station.StationName";
-			Statement statement = this.connection.createStatement();
-			ResultSet result_set = statement.executeQuery(query);
-
-			ArrayList<DailyStation> result_list = new ArrayList<DailyStation>();
-			while(result_set.next()){
-				DailyStation daily_station = new DailyStation();
-				daily_station.setStationName(result_set.getString(1));
-				daily_station.setOccupancyRate(result_set.getFloat(2));
-				result_list.add(daily_station);
-			}
-			result_set.close();
-			statement.close();
-			return result_list;
-		} catch(SQLException e){
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public ArrayList<DecadeClass> getDecadeClass(){
-		try {
-			//String query = "SELECT Vehicle.ClassName AS ClassName, MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS UseTime FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation	AND Vehicle.IdVehicle = Location.IdVehicle AND Location.StartDate > ? AND StationLocation.EndDate < ? GROUP BY Vehicle.ClassName";
-			String query = "SELECT Vehicle.ClassName AS Class, MAX(SUM(StationLocation.EndDate - Location.StartDate)) AS AverageDuration FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle AND Location.StartDate > add_months(CURRENT_DATE, -120) GROUP BY Vehicle.ClassName";
-			Statement statement = this.connection.createStatement();
-			ResultSet result_set = statement.executeQuery(query);
+			String query = "SELECT Vehicle.ClassName AS Class, SUM(StationLocation.EndDate - Location.StartDate) FROM Location, StationLocation, Vehicle WHERE Location.IdLocation = StationLocation.IdLocation AND Vehicle.IdVehicle = Location.IdVehicle	AND Location.StartDate > ? AND StationLocation.EndDate < add_months(?, 120) GROUP BY Vehicle.ClassName";
+			PreparedStatement statement = this.connection.prepareStatement(query);
+			statement.setDate(1,startDate);
+			statement.setDate(2,startDate);
+			ResultSet result_set = statement.executeQuery();
 
 			ArrayList<DecadeClass> result_list = new ArrayList<DecadeClass>();
 			while(result_set.next()){
