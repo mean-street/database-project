@@ -6,4 +6,4 @@ git log --shortstat --pretty="%cE" | sed 's/\(.*\)@.*/\1/' | grep -v "^$" | awk 
 
 echo"";echo "#################################### Current ownership #####################################";echo ""
 
-git ls-tree -r -z --name-only HEAD -- src/ sql/ conception/ | xargs -0 -n1 git blame --line-porcelain HEAD | grep  "^author " | sort | uniq -c | sort -nr
+git ls-tree -r -z --name-only HEAD -- src/ sql/ | xargs -0 -n1 git blame --line-porcelain HEAD | grep  "^author " | sort | uniq -c | sort -nr
