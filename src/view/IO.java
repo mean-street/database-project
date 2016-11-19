@@ -47,6 +47,18 @@ public class IO {
         return id;
     }
 
+    public int askForCreditCard() {
+        int creditCard = -1;
+        while(creditCard < 0) {
+            try {
+                creditCard = Integer.parseInt(this.console.readLine("Credit card number : "));
+            } catch(NumberFormatException e) {
+			   	creditCard = -1;
+            }
+        }
+        return creditCard;
+    }
+
     public String askForStationName() {
         String stationName = this.console.readLine("Nom de la station : ");
         return stationName;

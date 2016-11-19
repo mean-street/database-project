@@ -13,8 +13,8 @@ public class Vehlib {
 		DateParser dateParser = new DateParser();
 		Action currentAction = Action.NOTHING;
 		Date startDate,endDate;
-		String stationName,firstname,lastname,address;
-		String stringDate;
+		String stationName,stringDate;
+		int creditCard;
 
         boolean running = true;
         while(running) {
@@ -28,13 +28,10 @@ public class Vehlib {
                 case HIRE_BILLING:
 					locationId = io.askForHireId();
 					stationName = io.askForStationName();
-					firstname = io.askForFirstname();
-					lastname = io.askForLastname();
-					address = io.askForAddress();
-					//endDate = dateParser.getSQLCurrentDate();
+					creditCard = io.askForCreditCard();
 					stringDate = dateParser.getCurrentStringDate();
 					try {
-						ArrayList<LocationBill> location_list = model.getLocationBill(locationId,stationName,stringDate,firstname,lastname,address);
+						ArrayList<LocationBill> location_list = model.getLocationBill(locationId,stationName,stringDate,creditCard);
 						if(location_list == null)
 							System.out.println("Location illimitée ===> rien à payer.");
 						else {

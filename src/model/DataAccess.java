@@ -50,15 +50,17 @@ public class DataAccess {
 		}
 	}
 
-	public boolean checkIllimitedLocation(Statement statement,int idLocation,String firstname,String lastname,String address) throws IllegalArgumentException {
+	public boolean checkIllimitedLocation(Statement statement,int idLocation,int creditCard) throws IllegalArgumentException {
 		try {
-			String query = "SELECT IdLocation FROM Location NATURAL JOIN UserClassIllimitedRate NATURAL JOIN Subscriber WHERE IdLocation = "+idLocation+" AND Lastname = '"+lastname+"' AND Firstname = '"+firstname+"' AND Address = '"+address+"'";
+			//String query = "SELECT IdLocation FROM Location NATURAL JOIN UserClassIllimitedRate WHERE CreditCard = "+creditCard+"+ AND IdLocation = "+idLocation;
+			String query = "SELECT IdLocation FROM Location NATURAL JOIN UserClassIllimitedRate WHERE CreditCard = "+creditCard+" AND IdLocation = "+idLocation;
 			ResultSet result_set = statement.executeQuery(query);
 			boolean result = result_set.next();
 			result_set.close();
 			return result;
 		} catch(SQLException e){
 			try {
+				e.printStackTrace();
 				this.connection.rollback();
 			} catch(SQLException se){
 				System.out.println("This shouldn't happen !!!!!");
@@ -83,7 +85,7 @@ public class DataAccess {
 		}
 	}
 
-	public ArrayList<LocationBill> getLocationBill(int idLocation,String stationName,String endDate,String firstname,String lastname,String address) throws IllegalArgumentException {
+	public ArrayList<LocationBill> getLocationBill(int idLocation,String stationName,String endDate,int creditCard) throws IllegalArgumentException {
 		try {
 			Statement statement = this.connection.createStatement();
 			if(statement == null)
@@ -93,12 +95,13 @@ public class DataAccess {
 				throw new IllegalArgumentException();
 			}
 			this.insertStationLocation(statement,idLocation,stationName,endDate);
-			if(this.checkIllimitedLocation(statement,idLocation,firstname,lastname,address)){
+			if(this.checkIllimitedLocation(statement,idLocation,creditCard)){
 				this.connection.commit();
 				return null;
 			}
 
-			String query = "SELECT CASE WHEN (MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 < 25 OR MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 > 65) THEN CASE WHEN (CURRENT_DATE - L.StartDate) * 24 <= 1 THEN 0 ELSE CASE WHEN UCIR.Reduction > 0 THEN CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24) THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75 * UCIR.Reduction) + VC.Deposit ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75 * UCIR.Reduction)	END	ELSE CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24) THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75) + VC.Deposit ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75) END END END ELSE CASE WHEN (CURRENT_DATE - L.StartDate) * 24 <= 1 THEN 0 ELSE CASE WHEN UCIR.Reduction > 0 THEN CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24) THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * UCIR.Reduction) + VC.Deposit ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * UCIR.Reduction) END ELSE CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24) THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice) + VC.Deposit	ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice) END END END END AS PRICE FROM Location L INNER JOIN Vehicle V ON V.IdVehicle = L.IdVehicle INNER JOIN VehicleClass VC ON VC.ClassName = V.ClassName	INNER JOIN Subscriber S ON S.CreditCard = L.CreditCard LEFT JOIN UserClassLimitedRate UCIR ON (UCIR.CreditCard = S.CreditCard AND UCIR.ClassName = V.ClassName) WHERE L.IdLocation = ?";
+
+			String query = "SELECT V.IdVehicle,VC.ClassName, CASE WHEN (MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 < 25 OR MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 > 65) THEN CASE WHEN (CURRENT_DATE - L.StartDate) * 24 <= 1 THEN 0 ELSE CASE WHEN UCIR.Reduction > 0 THEN CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24) THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75 * UCIR.Reduction) + VC.Deposit ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75 * UCIR.Reduction)	END	ELSE CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24) THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75) + VC.Deposit ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75) END END END ELSE CASE WHEN (CURRENT_DATE - L.StartDate) * 24 <= 1 THEN 0 ELSE CASE WHEN UCIR.Reduction > 0 THEN CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24) THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * UCIR.Reduction) + VC.Deposit ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * UCIR.Reduction) END ELSE CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24) THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice) + VC.Deposit	ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice) END END END END AS PRICE FROM Location L INNER JOIN Vehicle V ON V.IdVehicle = L.IdVehicle INNER JOIN VehicleClass VC ON VC.ClassName = V.ClassName	INNER JOIN Subscriber S ON S.CreditCard = L.CreditCard LEFT JOIN UserClassLimitedRate UCIR ON (UCIR.CreditCard = S.CreditCard AND UCIR.ClassName = V.ClassName) WHERE L.IdLocation = ?";
 			PreparedStatement preparedStatement = this.connection.prepareStatement(query);
 			preparedStatement.setInt(1,idLocation);
 			ResultSet result_set = preparedStatement.executeQuery();
