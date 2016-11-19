@@ -81,7 +81,6 @@ INFO: La requete renvoie le NbLocation du forfait si le forfait existe
 
 4) INSERT dans StationLocation
 
-
 2 - Temps moyen d'utilisation par véhicule par mois
 ---------------------------------------------------
 Explication FORUM: Il s'agit de calculer la durée de location d'un véhicule durant un mois calendaire donné.
@@ -169,4 +168,35 @@ Output : tuples (Station, occupancy rate)
 	GROUP BY Station.StationName;
 
 VERSION 2
-A FINIR
+Input : Date (t) (REMPLACE ALL TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi') BY THE DATE)
+Output : tuples (Station, occupancy rate)
+SELECT 	EndStationName,
+		COUNT(IdVehicle)
+FROM (	SELECT 	StationLocation.EndStationName,
+				Location.IdVehicle
+		FROM 	StationLocation, Location
+		WHERE 	StationLocation.IdLocation = Location.IdLocation
+		AND		StationLocation.EndDate = (SELECT MAX(S.EndDate)
+											FROM 	StationLocation S, Location L
+											WHERE 	S.IdLocation = L.IdLocation
+											AND		L.IdVehicle = Location.IdVehicle
+											AND 	S.EndDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi'))
+		AND	    Location.IdVehicle NOT IN (SELECT 	L.IdVehicle
+											FROM 	StationLocation S, Location L
+											WHERE	L.IdLocation = S.IdLocation
+											AND		L.StartDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi')
+											AND		S.EndDate > TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi'))
+		AND		Location.IdVehicle NOT IN (SELECT 	L.IdVehicle
+											FROM 	Location L
+											WHERE	L.StartDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi')
+											AND		L.IdLocation NOT IN (SELECT S.IdLocation
+																		FROM	StationLocation S))
+		UNION
+		SELECT	StationVehicle.StationName,
+				Vehicle.IdVehicle
+		FROM	Vehicle, StationVehicle
+		WHERE	StationVehicle.IdVehicle = Vehicle.IdVehicle
+		AND		Vehicle.IdVehicle NOT IN (SELECT 	L.IdVehicle
+											FROM 	Location L
+											WHERE 	L.StartDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi')))
+GROUP BY EndStationName;

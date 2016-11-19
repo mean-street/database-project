@@ -191,31 +191,36 @@ AND Vehicle.IdVehicle = Location.IdVehicle
 AND Location.StartDate > add_months(CURRENT_DATE, -120)
 GROUP BY Vehicle.ClassName;
 
--- Taux d'occupation des stations dans la journée (PAS FINI)
-SELECT 	Location.IdVehicle,
-				Location.IdLocation,
-				StationLocation.EndStationName,
-				StationLocation.EndDate
-FROM	Location, StationLocation
-WHERE Location.IdLocation = StationLocation.IdLocation
-AND		StationLocation.EndStationName = 'Austerlitz'
-ORDER BY 4;
-
-SELECT DISTINCT	Location.IdVehicle
-FROM 	StationLocation, Location
-WHERE 	StationLocation.IdLocation = Location.IdLocation
-AND 	StationLocation.EndDate < TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi');
-
-SELECT DISTINCT	Location.IdVehicle
-FROM 	StationLocation, Location
-WHERE 	StationLocation.IdLocation = Location.IdLocation
-AND		StationLocation.EndDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi')
-MINUS
-SELECT DISTINCT Location.IdVehicle
-FROM 	StationLocation, Location
-WHERE 	Location.IdLocation NOT IN (SELECT StationLocation.IdLocation
-									FROM StationLocation
-									WHERE StationLocation.EndDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi'))
-AND 	Location.StartDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi');
+-- Taux d'occupation des stations dans la journée
+SELECT 	EndStationName,
+		COUNT(IdVehicle)
+FROM (	SELECT 	StationLocation.EndStationName,
+				Location.IdVehicle
+		FROM 	StationLocation, Location
+		WHERE 	StationLocation.IdLocation = Location.IdLocation
+		AND		StationLocation.EndDate = (SELECT MAX(S.EndDate)
+											FROM 	StationLocation S, Location L
+											WHERE 	S.IdLocation = L.IdLocation
+											AND		L.IdVehicle = Location.IdVehicle
+											AND 	S.EndDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi'))
+		AND	    Location.IdVehicle NOT IN (SELECT 	L.IdVehicle
+											FROM 	StationLocation S, Location L
+											WHERE	L.IdLocation = S.IdLocation
+											AND		L.StartDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi')
+											AND		S.EndDate > TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi'))
+		AND		Location.IdVehicle NOT IN (SELECT 	L.IdVehicle
+											FROM 	Location L
+											WHERE	L.StartDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi')
+											AND		L.IdLocation NOT IN (SELECT S.IdLocation
+																		FROM	StationLocation S))
+		UNION
+		SELECT	StationVehicle.StationName,
+				Vehicle.IdVehicle
+		FROM	Vehicle, StationVehicle
+		WHERE	StationVehicle.IdVehicle = Vehicle.IdVehicle
+		AND		Vehicle.IdVehicle NOT IN (SELECT 	L.IdVehicle
+											FROM 	Location L
+											WHERE 	L.StartDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi')))
+GROUP BY EndStationName;
 
 -- VERIFIER LES CONTRAINTES AVANT DE D'EXECUTER LES FONCTIONNALITES
