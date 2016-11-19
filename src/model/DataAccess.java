@@ -18,9 +18,9 @@ public class DataAccess {
 			this.connection = DriverManager.getConnection(database,user,password);
 			this.connection.setAutoCommit(false);
 		} catch(SQLException e){
-			e.printStackTrace();
+			System.out.println("Couldn't connect to database.");
 		} catch(ClassNotFoundException e){
-			e.printStackTrace();
+			System.out.println("Couldn't find plugin");
 		}
 	}
 
@@ -52,7 +52,7 @@ public class DataAccess {
 
 	public boolean checkIllimitedLocation(Statement statement,int idLocation,String firstname,String lastname,String address) throws IllegalArgumentException {
 		try {
-			String query = "SELECT IdLocation FROM Location NATURAL JOIN UserClassIllimitedRate NATURAL JOING Subscriber WHERE IdLocation = "+idLocation+" AND Lastname = "+lastname+" AND Firstname = "+firstname+" AND Address = "+address;
+			String query = "SELECT IdLocation FROM Location NATURAL JOIN UserClassIllimitedRate NATURAL JOIN Subscriber WHERE IdLocation = "+idLocation+" AND Lastname = '"+lastname+"' AND Firstname = '"+firstname+"' AND Address = '"+address+"'";
 			ResultSet result_set = statement.executeQuery(query);
 			boolean result = result_set.next();
 			result_set.close();
@@ -70,7 +70,6 @@ public class DataAccess {
 
 	public void insertStationLocation(Statement statement,int idLocation,String stationName,String endDate) throws IllegalArgumentException {
 		try {
-			System.out.println(endDate);
 			String query = "INSERT INTO StationLocation VALUES("+idLocation+",'"+stationName+"',TO_DATE('"+endDate+"','YYYY-MM-DD'))";
 			statement.executeUpdate(query);
 		} catch(SQLException e){
@@ -118,13 +117,13 @@ public class DataAccess {
 			return result_list;
 		} catch(SQLException e){
 			try {
+				e.printStackTrace();
 				this.connection.rollback();
+				return null;
 			} catch(SQLException se){
 				System.out.println("This shouldn't happen !!!!!");
 				throw new IllegalArgumentException();
 			}
-			e.printStackTrace();
-			return null;
 		}
 	}
 
@@ -148,7 +147,6 @@ public class DataAccess {
 			statement.close();
 			return result_list;
 		} catch(SQLException e){
-			e.printStackTrace();
 			return null;
 		}
 	}
@@ -173,7 +171,6 @@ public class DataAccess {
 			statement.close();
 			return result_list;
 		} catch(SQLException e){
-			e.printStackTrace();
 			return null;
 		}
 	}
@@ -197,7 +194,6 @@ public class DataAccess {
 			statement.close();
 			return result_list;
 		} catch(SQLException e){
-			e.printStackTrace();
 			return null;
 		}
 	}
@@ -215,7 +211,6 @@ public class DataAccess {
 			statement.close();
 			return result;
 		} catch(SQLException e){
-			e.printStackTrace();
 			return -1;
 		}
 	}
