@@ -1,6 +1,6 @@
 -- Subscribers #################################################################
 INSERT INTO Subscriber (CreditCard, LastName, FirstName, Birthdate, Address)
-VALUES (001, 'Mouchet', 'Alexandre', TO_DATE('17/03/1993', 'dd/mm/yyyy'), 'Paris');
+VALUES (001, 'Mouchet', 'Alexandre', TO_DATE('31/03/1995', 'dd/mm/yyyy'), 'Paris');
 INSERT INTO Subscriber (CreditCard, LastName, FirstName, Birthdate, Address)
 VALUES (002, 'Carre', 'Ludovic', TO_DATE('08/07/1995', 'dd/mm/yyyy'), 'Marseille');
 INSERT INTO Subscriber (CreditCard, LastName, FirstName, Birthdate, Address)
@@ -39,7 +39,7 @@ VALUES ('Austerlitz', 004, 1, TO_DATE('14/11/2016 08:05', 'dd/mm/yyyy hh24:mi'))
 INSERT INTO Location (StartStationName, CreditCard, IdVehicle, StartDate)
 VALUES ('Chatelet', 001, 4, TO_DATE('16/11/2016 15:14', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO Location (StartStationName, CreditCard, IdVehicle, StartDate)
-VALUES ('Austerlitz', 002, 5, TO_DATE('15/11/2016 12:52', 'dd/mm/yyyy hh24:mi'));
+VALUES ('Austerlitz', 002, 5, TO_DATE('14/11/2016 12:52', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO Location (StartStationName, CreditCard, IdVehicle, StartDate)
 VALUES ('JeanJaures', 001, 2, TO_DATE('11/11/2016 05:18', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO Location (StartStationName, CreditCard, IdVehicle, StartDate)
@@ -60,8 +60,10 @@ INSERT INTO Location (StartStationName, CreditCard, IdVehicle, StartDate)
 VALUES ('JeanJaures', 001, 3, TO_DATE('01/11/2016 05:18', 'dd/mm/yyyy hh24:mi'));
 
 -- UserClassIllimitedRate ######################################################
-INSERT INTO UserClassIllimitedRate (CreditCard, ClassName, Duration, StartDate, Price)
-VALUES (002, 'Velo', 365, TO_DATE('07/07/2016 21:45', 'dd/mm/yyyy hh24:mi'), 200);
+INSERT INTO UserClassIllimitedRate (CreditCard, ClassName, Duration, StartDate, Price, Reduction)
+VALUES (002, 'Utilitaire', 365, TO_DATE('07/07/2016 21:45', 'dd/mm/yyyy hh24:mi'), 200, 0.6);
+INSERT INTO UserClassIllimitedRate (CreditCard, ClassName, Duration, StartDate, Price, Reduction)
+VALUES (001, 'VoitureElectrique', 365, TO_DATE('07/07/2016 21:45', 'dd/mm/yyyy hh24:mi'), 200, 0.6);
 
 -- UserClassLimitedRate ########################################################
 INSERT INTO UserClassLimitedRate (CreditCard, ClassName, NbLocation, Price)

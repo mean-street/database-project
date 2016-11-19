@@ -50,10 +50,13 @@ CREATE TABLE UserClassIllimitedRate(
 	Duration INTEGER NOT NULL,
 	StartDate DATE NOT NULL,
 	Price FLOAT NOT NULL,
+	Reduction FLOAT NOT NULL,
 	CONSTRAINT pk_UserClassIllimitedRate PRIMARY KEY(CreditCard,ClassName),
 	CONSTRAINT fk_IllimitedRateUser FOREIGN KEY(CreditCard) REFERENCES Subscriber(CreditCard),
 	CONSTRAINT fk_IllimitedRateClass FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
-	CONSTRAINT ck_UserClassIllimitedRatePrice CHECK (Price > 0)
+	CONSTRAINT ck_UserClassIllimitedRatePrice CHECK (Price > 0),
+	CONSTRAINT ck_ReductionMin CHECK (Reduction >= 0),
+	CONSTRAINT ck_ReductionMax CHECK (Reduction < 1)
 );
 
 CREATE TABLE UserClassLimitedRate(
@@ -96,16 +99,61 @@ CREATE TABLE StationClass(
 @inserts_database
 
 -- Facturation d'une location
-SELECT 	Vehicle.IdVehicle,
-				Vehicle.ClassName,
-				CASE WHEN (CURRENT_DATE - Location.StartDate) > (VehicleClass.MaxDuration/24)
-						 THEN (CURRENT_DATE - Location.StartDate) * 24 * VehicleClass.HourlyPrice + VehicleClass.Deposit
-						 ELSE (CURRENT_DATE - Location.StartDate) * 24 * VehicleClass.HourlyPrice
-						 END AS Price
-FROM Location, Vehicle, VehicleClass
-WHERE Location.IdLocation = 1
-AND		Location.IdVehicle = Vehicle.IdVehicle
-AND		VehicleClass.ClassName = Vehicle.ClassName;
+SELECT	Location.IdLocation
+FROM	Location, StationLocation
+WHERE	Location.IdLocation = 2
+AND 	Location.IdLocation = StationLocation.IdLocation;
+
+SELECT 	UserClassLimitedRate.NbLocation
+FROM	Subscriber, Location, Vehicle, UserClassLimitedRate
+WHERE 	Location.IdLocation = 2
+AND		Subscriber.CreditCard = Location.CreditCard
+AND		Vehicle.IdVehicle = Location.IdVehicle
+AND		Subscriber.CreditCard = UserClassLimitedRate.CreditCard
+AND 	UserClassLimitedRate.ClassName = Vehicle.ClassName;
+
+SELECT 	CASE WHEN (MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 < 25 OR MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 > 65)
+			THEN
+				CASE WHEN (CURRENT_DATE - L.StartDate) * 24 <= 1
+					THEN 0
+					ELSE
+						CASE WHEN UCIR.Reduction > 0
+							THEN
+								CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24)
+									THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75 * UCIR.Reduction) + VC.Deposit
+									ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75 * UCIR.Reduction)
+								END
+							ELSE
+								CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24)
+									THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75) + VC.Deposit
+									ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * 0.75)
+								END
+						END
+				END
+			ELSE
+				CASE WHEN (CURRENT_DATE - L.StartDate) * 24 <= 1
+					THEN 0
+					ELSE
+						CASE WHEN UCIR.Reduction > 0
+							THEN
+								CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24)
+									THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * UCIR.Reduction) + VC.Deposit
+									ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice * UCIR.Reduction)
+								END
+							ELSE
+							CASE WHEN (CURRENT_DATE - L.StartDate) > (VC.MaxDuration/24)
+								THEN (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice) + VC.Deposit
+								ELSE (((CURRENT_DATE - L.StartDate) * 24 - 1) * VC.HourlyPrice)
+							END
+						END
+				END
+		END AS PRICE
+FROM Location L
+INNER JOIN Vehicle V ON V.IdVehicle = L.IdVehicle
+INNER JOIN VehicleClass VC ON VC.ClassName = V.ClassName
+INNER JOIN Subscriber S ON S.CreditCard = L.CreditCard
+LEFT JOIN UserClassIllimitedRate UCIR ON (UCIR.CreditCard = S.CreditCard AND UCIR.ClassName = V.ClassName)
+WHERE L.IdLocation = 2;
 
 -- Temps moyen d'utilisation par véhicule par mois
 SELECT 	TO_CHAR(Location.StartDate, 'YYYY-MM') AS Month,
@@ -153,11 +201,21 @@ WHERE Location.IdLocation = StationLocation.IdLocation
 AND		StationLocation.EndStationName = 'Austerlitz'
 ORDER BY 4;
 
-SELECT	Location.IdVehicle,
-				'15-NOV-16'
-FROM 	Location, StationLocation
-WHERE	Location.IdLocation = StationLocation.IdLocation
-AND		StationLocation.EndStationName = 'Austerlitz'
-AND		StationLocation.EndDate < TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi');
+SELECT DISTINCT	Location.IdVehicle
+FROM 	StationLocation, Location
+WHERE 	StationLocation.IdLocation = Location.IdLocation
+AND 	StationLocation.EndDate < TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi');
+
+SELECT DISTINCT	Location.IdVehicle
+FROM 	StationLocation, Location
+WHERE 	StationLocation.IdLocation = Location.IdLocation
+AND		StationLocation.EndDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi')
+MINUS
+SELECT DISTINCT Location.IdVehicle
+FROM 	StationLocation, Location
+WHERE 	Location.IdLocation NOT IN (SELECT StationLocation.IdLocation
+									FROM StationLocation
+									WHERE StationLocation.EndDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi'))
+AND 	Location.StartDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi');
 
 -- VERIFIER LES CONTRAINTES AVANT DE D'EXECUTER LES FONCTIONNALITES
