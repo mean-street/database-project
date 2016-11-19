@@ -21,21 +21,20 @@ Output: Price
 1) Vérifier que la location n'a pas déjà été facturé
 INFO: Si la requete renvoie une ligne c'est que la location a déjà été facturé
 	SELECT	Location.IdLocation
-	FROM	Location, StationLocation
-	WHERE	Location.IdLocation = 2
-	AND 	Location.IdLocation = StationLocation.IdLocation;
+	FROM	Location
+	WHERE	Location.IdLocation = 2;
 
-2) Vérifier si il existe un forfait (UserClassLimitedRate) en cours
+2) Vérifier si il existe un forfait (UserClassIllimitedRate) en cours
 INFO: La requete renvoie le NbLocation du forfait si le forfait existe
-	SELECT 	UserClassLimitedRate.NbLocation
-	FROM	Subscriber, Location, Vehicle, UserClassLimitedRate
+	SELECT 	UserClassIllimitedRate.NbLocation
+	FROM	Subscriber, Location, Vehicle, UserClassIllimitedRate
 	WHERE 	Location.IdLocation = 2
 	AND		Subscriber.CreditCard = Location.CreditCard
 	AND		Vehicle.IdVehicle = Location.IdVehicle
-	AND		Subscriber.CreditCard = UserClassLimitedRate.CreditCard
-	AND 	UserClassLimitedRate.ClassName = Vehicle.ClassName;
+	AND		Subscriber.CreditCard = UserClassIllimitedRate.CreditCard
+	AND 	UserClassIllimitedRate.ClassName = Vehicle.ClassName;
 
-3) Si il n'y a pas de forfait (UserClassLimitedRate) alors on applique la tarification
+3) Si il n'y a pas de forfait (UserClassIllimitedRate) alors on applique la tarification
 	SELECT 	CASE WHEN (MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 < 25 OR MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 > 65)
 				THEN
 					CASE WHEN (CURRENT_DATE - L.StartDate) * 24 <= 1
@@ -76,7 +75,7 @@ INFO: La requete renvoie le NbLocation du forfait si le forfait existe
 	INNER JOIN Vehicle V ON V.IdVehicle = L.IdVehicle
 	INNER JOIN VehicleClass VC ON VC.ClassName = V.ClassName
 	INNER JOIN Subscriber S ON S.CreditCard = L.CreditCard
-	LEFT JOIN UserClassIllimitedRate UCIR ON (UCIR.CreditCard = S.CreditCard AND UCIR.ClassName = V.ClassName)
+	LEFT JOIN UserClassLimitedRate UCIR ON (UCIR.CreditCard = S.CreditCard AND UCIR.ClassName = V.ClassName)
 	WHERE L.IdLocation = 2;
 
 4) INSERT dans StationLocation

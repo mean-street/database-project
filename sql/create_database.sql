@@ -44,30 +44,30 @@ CREATE TABLE Location(
 	CONSTRAINT fk_LocationVehicle FOREIGN KEY(IdVehicle) REFERENCES Vehicle(IdVehicle)
 );
 
-CREATE TABLE UserClassIllimitedRate(
+CREATE TABLE UserClassLimitedRate(
 	CreditCard VARCHAR(30) NOT NULL,
 	ClassName VARCHAR(20) NOT NULL,
 	Duration INTEGER NOT NULL,
 	StartDate DATE NOT NULL,
 	Price FLOAT NOT NULL,
 	Reduction FLOAT NOT NULL,
-	CONSTRAINT pk_UserClassIllimitedRate PRIMARY KEY(CreditCard,ClassName),
-	CONSTRAINT fk_IllimitedRateUser FOREIGN KEY(CreditCard) REFERENCES Subscriber(CreditCard),
-	CONSTRAINT fk_IllimitedRateClass FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
-	CONSTRAINT ck_UserClassIllimitedRatePrice CHECK (Price > 0),
+	CONSTRAINT pk_UserClassLimitedRate PRIMARY KEY(CreditCard,ClassName),
+	CONSTRAINT fk_LimitedRateUser FOREIGN KEY(CreditCard) REFERENCES Subscriber(CreditCard),
+	CONSTRAINT fk_LimitedRateClass FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
+	CONSTRAINT ck_UserClassLimitedRatePrice CHECK (Price > 0),
 	CONSTRAINT ck_ReductionMin CHECK (Reduction >= 0),
 	CONSTRAINT ck_ReductionMax CHECK (Reduction < 1)
 );
 
-CREATE TABLE UserClassLimitedRate(
+CREATE TABLE UserClassIllimitedRate(
 	CreditCard VARCHAR(30),
 	ClassName VARCHAR(20),
 	NbLocation INTEGER,
 	Price FLOAT,
-	CONSTRAINT pk_UserClassLimitedRate PRIMARY KEY(CreditCard,ClassName),
-	CONSTRAINT fk_LimitedRateUser FOREIGN KEY(CreditCard) REFERENCES Subscriber(CreditCard),
-	CONSTRAINT fk_LimitedRateClass FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
-	CONSTRAINT ck_UserClassLimitedRatePrice CHECK (Price > 0)
+	CONSTRAINT pk_UserClassIllimitedRate PRIMARY KEY(CreditCard,ClassName),
+	CONSTRAINT fk_IllimitedRateUser FOREIGN KEY(CreditCard) REFERENCES Subscriber(CreditCard),
+	CONSTRAINT fk_IllimitedRateClass FOREIGN KEY(ClassName) REFERENCES VehicleClass(ClassName),
+	CONSTRAINT ck_UserClassIllimitedRatePrice CHECK (Price > 0)
 );
 
 CREATE TABLE StationVehicle(
@@ -104,13 +104,13 @@ FROM	Location, StationLocation
 WHERE	Location.IdLocation = 2
 AND 	Location.IdLocation = StationLocation.IdLocation;
 
-SELECT 	UserClassLimitedRate.NbLocation
-FROM	Subscriber, Location, Vehicle, UserClassLimitedRate
+SELECT 	UserClassIllimitedRate.NbLocation
+FROM	Subscriber, Location, Vehicle, UserClassIllimitedRate
 WHERE 	Location.IdLocation = 2
 AND		Subscriber.CreditCard = Location.CreditCard
 AND		Vehicle.IdVehicle = Location.IdVehicle
-AND		Subscriber.CreditCard = UserClassLimitedRate.CreditCard
-AND 	UserClassLimitedRate.ClassName = Vehicle.ClassName;
+AND		Subscriber.CreditCard = UserClassIllimitedRate.CreditCard
+AND 	UserClassIllimitedRate.ClassName = Vehicle.ClassName;
 
 SELECT 	CASE WHEN (MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 < 25 OR MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 > 65)
 			THEN
@@ -152,7 +152,7 @@ FROM Location L
 INNER JOIN Vehicle V ON V.IdVehicle = L.IdVehicle
 INNER JOIN VehicleClass VC ON VC.ClassName = V.ClassName
 INNER JOIN Subscriber S ON S.CreditCard = L.CreditCard
-LEFT JOIN UserClassIllimitedRate UCIR ON (UCIR.CreditCard = S.CreditCard AND UCIR.ClassName = V.ClassName)
+LEFT JOIN UserClassLimitedRate UCIR ON (UCIR.CreditCard = S.CreditCard AND UCIR.ClassName = V.ClassName)
 WHERE L.IdLocation = 2;
 
 -- Temps moyen d'utilisation par véhicule par mois

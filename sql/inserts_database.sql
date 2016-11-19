@@ -60,14 +60,14 @@ VALUES ('Chatelet', 004, 3, TO_DATE('11/01/2005 11:31', 'dd/mm/yyyy hh24:mi'));
 INSERT INTO Location (StartStationName, CreditCard, IdVehicle, StartDate)
 VALUES ('JeanJaures', 001, 3, TO_DATE('01/11/2016 05:18', 'dd/mm/yyyy hh24:mi'));
 
--- UserClassIllimitedRate ######################################################
-INSERT INTO UserClassIllimitedRate (CreditCard, ClassName, Duration, StartDate, Price, Reduction)
+-- UserClassLimitedRate ######################################################
+INSERT INTO UserClassLimitedRate (CreditCard, ClassName, Duration, StartDate, Price, Reduction)
 VALUES (002, 'Utilitaire', 365, TO_DATE('07/07/2016 21:45', 'dd/mm/yyyy hh24:mi'), 200, 0.6);
-INSERT INTO UserClassIllimitedRate (CreditCard, ClassName, Duration, StartDate, Price, Reduction)
+INSERT INTO UserClassLimitedRate (CreditCard, ClassName, Duration, StartDate, Price, Reduction)
 VALUES (001, 'VoitureElectrique', 365, TO_DATE('07/07/2016 21:45', 'dd/mm/yyyy hh24:mi'), 200, 0.6);
 
--- UserClassLimitedRate ########################################################
-INSERT INTO UserClassLimitedRate (CreditCard, ClassName, NbLocation, Price)
+-- UserClassIllimitedRate ########################################################
+INSERT INTO UserClassIllimitedRate (CreditCard, ClassName, NbLocation, Price)
 VALUES (004, 'Utilitaire', 12, 100);
 
 -- StationVehicle ##############################################################
