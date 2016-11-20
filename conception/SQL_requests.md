@@ -199,3 +199,48 @@ FROM (	SELECT 	StationLocation.EndStationName,
 											FROM 	Location L
 											WHERE 	L.StartDate <= TO_DATE('15/11/2016 12:00', 'dd/mm/yyyy hh24:mi')))
 GROUP BY EndStationName;
+
+VERSION 3:
+Faire les étapes 1 à 3 uniquement lors de la fin d'une location
+INPUT: StartStationName
+
+1) Récupérer les dernières infos pour une Station
+	SELECT  StationOccupation.StationName,
+	        StationOccupation.Day,
+	        StationOccupation.CurrentOccupation,
+	        StationOccupation.MaxOccupation
+	FROM    StationOccupation
+	WHERE   StationOccupation.StationName = ??'INPUT'??
+	AND     StationOccupation.Day = (SELECT MAX(SO.Day)
+										FROM 	StationOccupation SO
+										WHERE 	SO.StationName = StationOccupation.StationName);
+
+2) Si aucune ligne apparait à l'étape 1:
+	INSERT INTO StationOccupation (StationName, Day, CurrentOccupation, MaxOccupation)
+	VALUES (??'INPUT'??, TRUNC(CURRENT_DATE), 1, 1);
+
+3) Si une ligne apparait à l'étape 1:
+	Si la date (colonne 2) correspond à la date d'aujourd'hui
+		Si le CurrentOccupation (colonne 3) + 1 > MaxOccupation (colonne 4)
+			UPDATE	StationOccupation
+			SET 	CurrentOccupation = CurrentOccupation de l'étape(1) + 1,
+					MaxOccupation = CurrentOccupation de l'étape(1) + 1
+			WHERE 	StationName = '??'INPUT'??'
+			AND 	Day = TRUNC(CURRENT_DATE) --Day de l'étape(1)
+		Sinon
+			UPDATE	StationOccupation
+			SET 	CurrentOccupation = CurrentOccupation de l'étape(1) + 1,
+			WHERE 	StationName = '??'INPUT'??'
+			AND 	Day = TRUNC(CURRENT_DATE) --Day de l'étape(1)
+	Sinon
+		INSERT INTO StationOccupation (StationName, Day, CurrentOccupation, MaxOccupation)
+		VALUES (??'INPUT'??, TRUNC(CURRENT_DATE), CurrentOccupation de l'étape(1) + 1, CurrentOccupation de l'étape(1) + 1);
+
+4) Récupérer le rapport demandé
+INPUT: La journée voulue
+	SELECT	StationOccupation.StationName,
+			StationOccupation.MaxOccupation / SUM(StationClass.MaxSpots) AS RAPPORT
+	FROM 	StationOccupation, StationClass
+	WHERE	StationOccupation.StationName = StationClass.StationName
+	AND		StationOccupation.Day = TO_DATE('01/01/2015', 'dd/mm/yyyy')
+	GROUP BY StationOccupation.StationName, StationOccupation.MaxOccupation;

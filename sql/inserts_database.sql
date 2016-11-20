@@ -132,3 +132,9 @@ INSERT INTO StationClass (StationName, ClassName, MaxSpots)
 VALUES ('JeanJaures', 'VeloRemorque', 10);
 INSERT INTO StationClass (StationName, ClassName, MaxSpots)
 VALUES ('JeanJaures', 'Utilitaire', 8);
+
+-- StationOccupation ###########################################################
+INSERT INTO StationOccupation (StationName, Day, CurrentOccupation, MaxOccupation)
+VALUES ('Austerlitz', TRUNC(CURRENT_DATE), 3, 3);
+INSERT INTO StationOccupation (StationName, Day, CurrentOccupation, MaxOccupation)
+VALUES ('JeanJaures', TRUNC(CURRENT_DATE), 1, 1);
