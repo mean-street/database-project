@@ -202,7 +202,7 @@ GROUP BY EndStationName;
 
 VERSION 3:
 Faire les étapes 1 à 3 uniquement lors de la fin d'une location
-INPUT: StartStationName
+INPUT: StationName
 
 1) Récupérer les dernières infos pour une Station
 	SELECT  StationOccupation.StationName,
@@ -242,5 +242,5 @@ INPUT: La journée voulue
 			StationOccupation.MaxOccupation / SUM(StationClass.MaxSpots) AS RAPPORT
 	FROM 	StationOccupation, StationClass
 	WHERE	StationOccupation.StationName = StationClass.StationName
-	AND		StationOccupation.Day = TO_DATE('01/01/2015', 'dd/mm/yyyy')
+	AND		StationOccupation.Day = TO_DATE(??'DATE'??, 'dd/mm/yyyy')
 	GROUP BY StationOccupation.StationName, StationOccupation.MaxOccupation;
