@@ -1,3 +1,7 @@
+@drop_database.sql
+@create_database.sql
+@inserts_database.sql
+
 -- Facturation d'une location
 SELECT	Location.IdLocation
 FROM	Location, StationLocation
