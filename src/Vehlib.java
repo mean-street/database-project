@@ -74,6 +74,8 @@ public class Vehlib {
 				case INTEGRITY_CHECK:
 					System.out.println("checkLocationsVehicles = " + model.checkLocationsVehicles());
 					model.checkParkedVehicles();
+					model.checkStationParkedVehicles();
+					model.checkSubscriberLocation();
 					break;
                 default:
 					model.closeConnection();

@@ -53,6 +53,43 @@ public class DataAccess {
 		}
 	}
 
+	public boolean checkStationParkedVehicles(){
+		try {
+			String query = "SELECT Location.IdVehicle, StationLocation.EndStationName, StationVehicle.StationName FROM Location INNER JOIN StationLocation ON StationLocation.IdLocation = Location.IdLocation LEFT JOIN StationVehicle ON (StationVehicle.IdVehicle = Location.IdVehicle AND StationVehicle.StationName = StationLocation.EndStationName) WHERE StationLocation.EndDate = (SELECT MAX(S.EndDate) FROM 	StationLocation S, Location L WHERE S.IdLocation = L.IdLocation AND	L.IdVehicle = Location.IdVehicle) AND Location.IdVehicle NOT IN (SELECT	L.IdVehicle	FROM Location L	WHERE L.IdLocation NOT IN (SELECT S.IdLocation FROM	StationLocation S))";
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+			while(result_set.next()){
+				if(!result_set.getString(2).equals(result_set.getString(3))){
+					IO.printStationParkedVehicles(result_set.getInt(1),result_set.getString(2),result_set.getString(3));
+					return false;
+				}
+			}
+			result_set.close();
+			statement.close();
+			return true;
+		} catch(SQLException e){
+			System.out.println("Connection error.");
+			return false;
+		}
+	}
+
+	public boolean checkSubscriberLocation() {
+		try {
+			String query = "SELECT Subscriber.CreditCard, UserClassLimitedRate.ClassName FROM Subscriber, UserClassLimitedRate WHERE UserClassLimitedRate.CreditCard = Subscriber.CreditCard AND UserClassLimitedRate.ClassName IN (SELECT UCIR.ClassName FROM UserClassIllimitedRate UCIR WHERE UCIR.CreditCard = Subscriber.CreditCard)";
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+			if(result_set.next()){
+				IO.printSubscriberLocation(result_set.getString(1),result_set.getString(2));
+				return false;
+			}
+			result_set.close();
+			return true;
+		} catch(SQLException e){
+			System.out.println("Connection error.");
+			return false;
+		}
+	}
+
 	public boolean checkLocationId(Statement statement,int idLocation) throws IllegalArgumentException {
 		try {
 			String query = "SELECT IdLocation FROM StationLocation WHERE IdLocation = "+idLocation;
@@ -91,10 +128,6 @@ public class DataAccess {
 		}
 	}
 
-	// 4th check
-	// public boolean 
-
-	// 5th check
 	public boolean checkLocationsVehicles() throws IllegalArgumentException {
 		try {
 			String query = "SELECT Location.IdLocation, Location.IdVehicle FROM Location WHERE Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L, StationLocation SL WHERE SL.IdLocation = L.IdLocation AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate AND Location.StartDate < SL.EndDate) OR Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L WHERE L.IdLocation NOT IN (SELECT SL.IdLocation FROM StationLocation SL) AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate) ORDER BY 1";
@@ -114,8 +147,6 @@ public class DataAccess {
 			throw new IllegalArgumentException();
 		}
 	}
-
-
 
 	public void insertStationLocation(Statement statement,int idLocation,String stationName,String endDate) throws IllegalArgumentException {
 		try {

@@ -13,10 +13,30 @@ public class IO {
 		System.out.println("-------------------------------------------------------------------------------"+'\n');
 	}
 
+	public static void startErrorBlock(){
+		System.out.println('\n'+"========================================== ERROR ==========================================");
+	}
+
+	public static void endErrorBlock(){
+		System.out.println("========================================== ERROR =========================================="+'\n');
+	}
+
 	public static void printParkedVehicles(String stationName,String className,int maxSpots,int parkedVehicles){
-		System.out.println("==================== ERROR ====================");
-		System.out.println("Station name: "+stationName+" Class name: "+className+" Max spots: "+maxSpots+" Parked vehicles: "+parkedVehicles);
-		System.out.println("==================== ERROR ====================");
+		IO.startErrorBlock();
+		System.out.println("Station name: "+stationName+"\tClass name: "+className+"\tMax spots: "+maxSpots+"\tParked vehicles: "+parkedVehicles);
+		IO.endErrorBlock();
+	}
+
+	public static void printStationParkedVehicles(int locationId,String endStationName,String stationName){
+	IO.startErrorBlock();
+		System.out.println("Location id: "+locationId+"\tEnd station name: "+endStationName+"\tStation name: "+stationName);
+		IO.endErrorBlock();
+	}
+
+	public static void printSubscriberLocation(String creditCard,String className){
+	IO.startErrorBlock();
+		System.out.println("Credit card: "+creditCard+"\tClass name: "+className);
+		IO.endErrorBlock();
 	}
 
     public Action askForAction() {
