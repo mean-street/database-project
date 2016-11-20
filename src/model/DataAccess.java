@@ -308,8 +308,7 @@ public class DataAccess {
 	public ArrayList<LocationBill> getLocationBill(int idLocation,String stationName,String endDate,int creditCard) throws IllegalArgumentException {
 		try {
 			Statement statement = this.connection.createStatement();
-			if(statement == null)
-			this.statement.executeQuery("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ");
+			this.connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
 			if(this.checkLocationId(statement,idLocation)){
 				this.connection.commit();
 				throw new IllegalArgumentException();

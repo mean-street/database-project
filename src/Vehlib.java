@@ -31,7 +31,7 @@ public class Vehlib {
 					try {
 						ArrayList<LocationBill> location_list = model.getLocationBill(locationId,stationName,stringDate,creditCard);
 						if(location_list == null)
-							System.out.println("Location illimitée ===> rien à payer.");
+							System.out.println("\nLocation illimitée ===> rien à payer.\n");
 						else {
 							IO.startBlock();
 							for(LocationBill location: location_list){
