@@ -69,6 +69,13 @@ public class Vehlib {
 					IO.endBlock();
 					break;
                 case STATION_USAGE_RATE:
+					stationName = io.askForStationName();
+					startDate = dateParser.getSQLDate(io.askForStartDate());
+					double result = model.getOccupationRate(startDate, stationName);
+					IO.startBlock();
+					System.out.println(stationName + " : " + result);
+					IO.endBlock();
+					
 					break;
 				case INTEGRITY_CHECK:
 					System.out.println("checkLocationsVehicles = " + model.checkLocationsVehicles());

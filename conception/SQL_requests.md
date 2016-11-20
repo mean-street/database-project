@@ -237,10 +237,12 @@ INPUT: StationName
 		VALUES (??'INPUT'??, TRUNC(CURRENT_DATE), CurrentOccupation de l'étape(1) + 1, CurrentOccupation de l'étape(1) + 1);
 
 4) Récupérer le rapport demandé
-INPUT: La journée voulue
+Input : date, station
+Output : tupes (station, ratio)
 	SELECT	StationOccupation.StationName,
 			StationOccupation.MaxOccupation / SUM(StationClass.MaxSpots) AS RAPPORT
 	FROM 	StationOccupation, StationClass
 	WHERE	StationOccupation.StationName = StationClass.StationName
+	AND		StationClass.StationName = StationInput
 	AND		StationOccupation.Day = TO_DATE(??'DATE'??, 'dd/mm/yyyy')
 	GROUP BY StationOccupation.StationName, StationOccupation.MaxOccupation;

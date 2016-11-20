@@ -442,17 +442,25 @@ public class DataAccess {
 
 	public double getOccupationRate(Date date, String stationName) throws IllegalArgumentException {
 		try {
-			String query = "";
-			PreparedStatement statement = this.connection.prepareStatement(query);
-			statement.setDate(1, date);
-			statement.setString(2, stationName);
+ String query = "SELECT StationOccupation.StationName, StationOccupation.MaxOccupation / SUM(StationClass.MaxSpots) AS RAPPORT FROM StationOccupation, StationClass WHERE StationOccupation.StationName = StationClass.StationName AND StationClass.StationName = ? AND StationOccupation.Day = ? GROUP BY StationOccupation.StationName, StationOccupation.MaxOccupation"; 
+//  SELECT StationOccupation.StationName, StationOccupation.MaxOccupation / SUM(StationClass.MaxSpots) AS RAPPORT FROM StationOccupation, StationClass WHERE StationOccupation.StationName = StationClass.StationName AND StationOccupation.StationName = 'Austerlitz' AND StationOccupation.Day = TO_DATE('2016-11-06', 'yyyy-mm-dd') GROUP BY StationOccupation.StationName, StationOccupation.MaxOccupation;
+ 			PreparedStatement statement = this.connection.prepareStatement(query);
+			statement.setString(1, stationName);
+			statement.setDate(2, date);
 			ResultSet result_set = statement.executeQuery();
-			result_set.next();
+			boolean val = result_set.next();
+			if (val == false) {
+				System.out.println("No rows selected.");
+				result_set.close();
+				statement.close();
+				return -1.0;
+			}
 			double result = result_set.getDouble(2);
 			result_set.close();
 			statement.close();
 			return result;
 		} catch(SQLException e){
+			e.printStackTrace();
 			throw new IllegalArgumentException();
 		}
 	}
