@@ -96,8 +96,8 @@ public class DataAccess {
 
 	// 5th check
 	public boolean checkLocationsVehicles() throws IllegalArgumentException {
-		try 
-			String query = "SELECT Location.IdLocation, Location.IdVehicle FROM Location WHERE Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L, StationLocation SL WHERE SL.IdLocation = L.IdLocation AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate AND Location.StartDate < SL.EndDate) OR Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L WHERE L.IdLocation NOT IN (SELECT SL.IdLocation FROM StationLocation SL) AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate) ORDER BY 1;";
+		try {
+			String query = "SELECT Location.IdLocation, Location.IdVehicle FROM Location WHERE Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L, StationLocation SL WHERE SL.IdLocation = L.IdLocation AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate AND Location.StartDate < SL.EndDate) OR Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L WHERE L.IdLocation NOT IN (SELECT SL.IdLocation FROM StationLocation SL) AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate) ORDER BY 1";
 			Statement statement = this.connection.createStatement();
 			ResultSet result_set = statement.executeQuery(query);
 			boolean result = result_set.next(); // False if nothing in result
@@ -111,7 +111,7 @@ public class DataAccess {
 				System.out.println("This shouldn't happen !!!!!");
 				throw new IllegalArgumentException();
 			}
-			throw new IllegalArgumentException;
+			throw new IllegalArgumentException();
 		}
 	}
 
