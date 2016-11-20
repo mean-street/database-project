@@ -90,6 +90,10 @@ public class DataAccess {
 		}
 	}
 
+	public void updateStationMaxSpots(Statement statement,String stationName){
+		;
+	}
+
 	public boolean checkLocationId(Statement statement,int idLocation) throws IllegalArgumentException {
 		try {
 			String query = "SELECT IdLocation FROM StationLocation WHERE IdLocation = "+idLocation;
@@ -128,7 +132,6 @@ public class DataAccess {
 		}
 	}
 
-	// 4th check
 	public boolean checkEndedRates(String currentDate) throws IllegalArgumentException {
 		try {
 			String query = "SELECT Subscriber.CreditCard, TO_CHAR(UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration, 'dd/mm/yyyy'), CASE WHEN (UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration) < TO_DATE('"+currentDate+"', 'YYYY-MM-DD') THEN 1 ELSE 0 END AS isFinished FROM Subscriber, UserClassLimitedRate WHERE UserClassLimitedRate.CreditCard = Subscriber.CreditCard";

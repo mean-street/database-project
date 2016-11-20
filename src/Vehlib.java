@@ -11,7 +11,7 @@ public class Vehlib {
         IO io = new IO();
         DataAccess model = new DataAccess();
 		DateParser dateParser = new DateParser();
-		Action currentAction = Action.NOTHING;
+		Action currentAction;
 		Date startDate,endDate;
 		String stationName,stringDate;
 		int creditCard;
@@ -69,12 +69,10 @@ public class Vehlib {
 					IO.endBlock();
 					break;
                 case STATION_USAGE_RATE:
-                    currentAction = Action.NOTHING;
 					break;
 				case INTEGRITY_CHECK:
 					System.out.println("checkLocationsVehicles = " + model.checkLocationsVehicles());
 					System.out.println("checkEndedRates = " + model.checkEndedRates(dateParser.getCurrentStringDate()));
-                    currentAction = Action.NOTHING;
 					model.checkParkedVehicles();
 					model.checkStationParkedVehicles();
 					model.checkSubscriberLocation();

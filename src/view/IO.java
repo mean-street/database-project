@@ -52,7 +52,7 @@ public class IO {
             "\t6. Vérifier l'intégrité de la base de données\n"
         );
 
-        while(action < 0 || action >= Action.values().length - 1) {
+        while(action < 0 || action >= Action.values().length) {
             try {
                 action = Integer.parseInt(this.console.readLine("Sélectionner une action [0/1/2/3/4/5/6] : "));
             } catch(NumberFormatException e) {
