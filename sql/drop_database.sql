@@ -1,3 +1,4 @@
+DROP TABLE StationOccupation PURGE;
 DROP TABLE StationClass PURGE;
 DROP TABLE StationLocation PURGE;
 DROP TABLE StationVehicle PURGE;

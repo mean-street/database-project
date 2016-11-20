@@ -72,7 +72,8 @@ public class Vehlib {
 					break;
 				case INTEGRITY_CHECK:
 					System.out.println("checkLocationsVehicles = " + model.checkLocationsVehicles());
-					System.out.println("checkEndedRates = " + model.checkEndedRates(dateParser.getCurrentStringDate()));
+					System.out.println("checkEndedRatesLimited = " + model.checkEndedRatesLimited(dateParser.getCurrentStringDate()));
+					System.out.println("checkEndedRatesIllimited = " + model.checkEndedRatesIllimited());
 					model.checkParkedVehicles();
 					model.checkStationParkedVehicles();
 					model.checkSubscriberLocation();
