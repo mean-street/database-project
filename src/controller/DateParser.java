@@ -9,6 +9,11 @@ public class DateParser {
 	private SimpleDateFormat format;
 	
 
+	public static String getSQLString(java.sql.Date date){
+		SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
+		return dateFormat.format(date);
+	}
+
 	/** Constructor of DateParser
 	 *  @param currentDate Current date
 	 *  @param format Date format

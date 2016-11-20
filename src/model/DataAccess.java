@@ -33,6 +33,94 @@ public class DataAccess {
 		}
 	}
 
+	public void insertStationOccupation(Statement statement,String stationName,String currentDate) throws IllegalArgumentException {
+		try {
+			String query = "INSERT INTO StationOccupation VALUES ('"+stationName+"',TO_DATE('"+currentDate+"','YYYY-MM-DD'), 1, 1)";
+			statement.executeUpdate(query);
+		} catch(SQLException e){
+			try {
+				this.connection.rollback();
+				throw new IllegalArgumentException();
+			} catch(SQLException se){
+				System.out.println("Connection to database lost.");
+			}
+		}
+	}
+
+	public void updateMaxStationOccupation(Statement statement,String stationName,String currentDate,int currentOccupation) throws IllegalArgumentException {
+		try {
+			String query = "UPDATE StationOccupation SET CurrentOccupation ="+currentOccupation+",MaxOccupation = "+currentOccupation+" WHERE StationName = '"+stationName+"' AND Day = TO_DATE('"+currentDate+"','YYYY-MM-DD')";
+			statement.executeUpdate(query);
+		} catch(SQLException e){
+			try {
+				this.connection.rollback();
+				throw new IllegalArgumentException();
+			} catch(SQLException se){
+				System.out.println("Connection to database lost.");
+			}
+		}
+	}
+
+	public void updateCurrentOccupation(Statement statement,String stationName,String currentDate,int currentOccupation) throws IllegalArgumentException {
+		try {
+			String query = "UPDATE StationOccupation SET CurrentOccupation = "+currentOccupation+" WHERE StationName = '"+stationName+"' AND Day = TO_DATE('"+currentDate+"','YYYY-MM-DD')";
+			statement.executeUpdate(query);
+		} catch(SQLException e){
+			try {
+				this.connection.rollback();
+				throw new IllegalArgumentException();
+			} catch(SQLException se){
+				System.out.println("Connection to database lost.");
+			}
+		}
+	}
+
+	public void insertMaxStationOccupation(Statement statement,String stationName,String currentDate,int currentOccupation) throws IllegalArgumentException {
+		try {
+			String query = "INSERT INTO StationOccupation VALUES ('"+stationName+"',TO_DATE('"+currentDate+"','YYYY-MM-DD'),"+currentOccupation+","+currentOccupation+")";
+			statement.executeUpdate(query);
+		} catch(SQLException e){
+			try {
+				this.connection.rollback();
+				throw new IllegalArgumentException();
+			} catch(SQLException se){
+				System.out.println("Connection to database lost.");
+			}
+		}
+	}
+
+	public void updateStationOccupation(Statement statement,String stationName,String currentDate)throws IllegalArgumentException {
+		try {
+			String query = "SELECT StationOccupation.StationName, StationOccupation.Day, StationOccupation.CurrentOccupation, StationOccupation.MaxOccupation FROM StationOccupation WHERE StationOccupation.StationName = '"+stationName+"' AND StationOccupation.Day = (SELECT MAX(SO.Day) FROM StationOccupation SO WHERE 	SO.StationName = StationOccupation.StationName)";
+			ResultSet result_set = statement.executeQuery(query);
+			if(!result_set.next()){
+				System.out.println("LOL");
+				this.insertStationOccupation(statement,stationName,currentDate);
+			}
+			else {
+				String storedDate = DateParser.getSQLString(result_set.getDate(2));
+				if(storedDate.equals(currentDate)){
+					if(result_set.getInt(3)+1 > result_set.getInt(4)){
+						this.updateMaxStationOccupation(statement,stationName,currentDate,result_set.getInt(3)+1);
+					}
+					else {
+						this.updateCurrentOccupation(statement,stationName,currentDate,result_set.getInt(3)+1);
+					}
+				}
+				else {
+					this.insertMaxStationOccupation(statement,stationName,currentDate,result_set.getInt(3)+1);
+				}
+			}
+		} catch(SQLException e){
+			try {
+				this.connection.rollback();
+				throw new IllegalArgumentException();
+			} catch(SQLException se){
+				System.out.println("Connection to database lost.");
+			}
+		}
+	}
+
 	public boolean checkParkedVehicles(){
 		try {
 			String query = "SELECT StationVehicle.StationName,Vehicle.ClassName, StationClass.MaxSpots, COUNT(Vehicle.IdVehicle) FROM Vehicle, StationVehicle, StationClass WHERE Vehicle.IdVehicle = StationVehicle.IdVehicle AND StationVehicle.StationName = StationClass.StationName AND StationClass.ClassName = Vehicle.ClassName GROUP BY StationVehicle.StationName, Vehicle.ClassName, StationClass.MaxSpots";
@@ -90,10 +178,6 @@ public class DataAccess {
 		}
 	}
 
-	public void updateStationMaxSpots(Statement statement,String stationName){
-		;
-	}
-
 	public boolean checkLocationId(Statement statement,int idLocation) throws IllegalArgumentException {
 		try {
 			String query = "SELECT IdLocation FROM StationLocation WHERE IdLocation = "+idLocation;
@@ -104,17 +188,16 @@ public class DataAccess {
 		} catch(SQLException e){
 			try {
 				this.connection.rollback();
+				throw new IllegalArgumentException();
 			} catch(SQLException se){
 				System.out.println("This shouldn't happen !!!!!");
 				throw new IllegalArgumentException();
 			}
-			throw new IllegalArgumentException();
 		}
 	}
 
 	public boolean checkIllimitedLocation(Statement statement,int idLocation,int creditCard) throws IllegalArgumentException {
 		try {
-			//String query = "SELECT IdLocation FROM Location NATURAL JOIN UserClassIllimitedRate WHERE CreditCard = "+creditCard+"+ AND IdLocation = "+idLocation;
 			String query = "SELECT IdLocation FROM Location NATURAL JOIN UserClassIllimitedRate WHERE CreditCard = "+creditCard+" AND IdLocation = "+idLocation;
 			ResultSet result_set = statement.executeQuery(query);
 			boolean result = result_set.next();
@@ -122,7 +205,6 @@ public class DataAccess {
 			return result;
 		} catch(SQLException e){
 			try {
-				e.printStackTrace();
 				this.connection.rollback();
 			} catch(SQLException se){
 				System.out.println("This shouldn't happen !!!!!");
@@ -132,7 +214,6 @@ public class DataAccess {
 		}
 	}
 
-	// 4th check, first part
 	public boolean checkEndedRatesLimited(String currentDate) throws IllegalArgumentException {
 		try {
 			String query = "SELECT Subscriber.CreditCard, TO_CHAR(UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration, 'dd/mm/yyyy'), CASE WHEN (UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration) < TO_DATE('"+currentDate+"', 'YYYY-MM-DD') THEN 1 ELSE 0 END AS isFinished FROM Subscriber, UserClassLimitedRate WHERE UserClassLimitedRate.CreditCard = Subscriber.CreditCard";
@@ -149,13 +230,11 @@ public class DataAccess {
 			return true;
 
 		} catch(SQLException e){
-			e.printStackTrace();
 			System.out.println("Connection error.");
 			return false;
 		}
 	}
 
-	// 4th check, second part
 	public boolean checkEndedRatesIllimited() throws IllegalArgumentException {
 		try {
 			String query = "SELECT Subscriber.CreditCard, UserClassIllimitedRate.NbLocation, CASE WHEN UserClassIllimitedRate.NbLocation <= 0 THEN 1 ELSE 0 END AS isFinished FROM Subscriber, UserClassIllimitedRate WHERE UserClassIllimitedRate.CreditCard = Subscriber.CreditCard";
@@ -172,16 +251,11 @@ public class DataAccess {
 			return true;
 
 		} catch(SQLException e){
-			e.printStackTrace();
 			System.out.println("Connection error.");
 			return false;
 		}
 	}
 
-
-
-
-	// 5th check
 	public boolean checkLocationsVehicles() throws IllegalArgumentException {
 		try {
 			String query = "SELECT Location.IdLocation, Location.IdVehicle FROM Location WHERE Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L, StationLocation SL WHERE SL.IdLocation = L.IdLocation AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate AND Location.StartDate < SL.EndDate) OR Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L WHERE L.IdLocation NOT IN (SELECT SL.IdLocation FROM StationLocation SL) AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate) ORDER BY 1";
@@ -205,11 +279,29 @@ public class DataAccess {
 		} catch(SQLException e){
 			try {
 				this.connection.rollback();
+				throw new IllegalArgumentException();
 			} catch(SQLException se){
 				System.out.println("This shouldn't happen !!!!!");
 				throw new IllegalArgumentException();
 			}
-			throw new IllegalArgumentException();
+		}
+	}
+
+	public void insertStationVehicle(Statement statement,int idLocation,String stationName) throws IllegalArgumentException {
+		try {
+			String query = "SELECT IdVehicle FROM Location WHERE IdLocation = "+idLocation;
+			ResultSet result_set = statement.executeQuery(query);
+			result_set.next();
+			int vehicleId = result_set.getInt(1);
+			query = "INSERT INTO StationVehicle VALUES("+vehicleId+",'"+stationName+"')";
+			statement.executeQuery(query);
+		} catch(SQLException e){
+			try {
+				this.connection.rollback();
+				throw new IllegalArgumentException();
+			} catch(SQLException se){
+				System.out.println("Connection to database lost.");
+			}
 		}
 	}
 
@@ -223,6 +315,8 @@ public class DataAccess {
 				throw new IllegalArgumentException();
 			}
 			this.insertStationLocation(statement,idLocation,stationName,endDate);
+			this.insertStationVehicle(statement,idLocation,stationName);
+			this.updateStationOccupation(statement,stationName,endDate);
 			if(this.checkIllimitedLocation(statement,idLocation,creditCard)){
 				this.connection.commit();
 				return null;
@@ -248,7 +342,6 @@ public class DataAccess {
 			return result_list;
 		} catch(SQLException e){
 			try {
-				e.printStackTrace();
 				this.connection.rollback();
 				return null;
 			} catch(SQLException se){
