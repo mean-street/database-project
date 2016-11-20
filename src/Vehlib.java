@@ -18,12 +18,10 @@ public class Vehlib {
 
         boolean running = true;
         while(running) {
+			currentAction = io.askForAction();
             switch(currentAction) {
                 case QUIT:
                     running = false;
-					break;
-                case NOTHING:
-                    currentAction = io.askForAction();
 					break;
                 case HIRE_BILLING:
 					locationId = io.askForHireId();
@@ -44,7 +42,6 @@ public class Vehlib {
 					} catch(IllegalArgumentException e){
 						System.out.println("Cette location n'existe pas.\n");
 					}
-                    currentAction = Action.NOTHING;
 					break;
                 case VEHICLE_MEAN_USE_TIME:
 					ArrayList<MonthlyVehicle> monthly_vehicle_list = model.getMonthlyVehicle(io.askForStartMonth());
@@ -53,7 +50,6 @@ public class Vehlib {
 						System.out.println(monthly_utilisation.toString());
 					}
 					IO.endBlock();
-                    currentAction = Action.NOTHING;
 					break;
                 case CATEGORY_MEAN_USE_TIME:
 					ArrayList<MonthlyClass> monthly_class_list = model.getMonthlyClass(io.askForStartMonth());
@@ -62,7 +58,6 @@ public class Vehlib {
 						System.out.println(monthly_class.toString());
 					}
 					IO.endBlock();
-                    currentAction = Action.NOTHING;
 					break;
                 case MOST_USED_CATEGORY:
 					startDate = dateParser.getSQLDate(io.askForStartDate());
@@ -72,13 +67,18 @@ public class Vehlib {
 						System.out.println(decade_class.toString());
 					}
 					IO.endBlock();
-                    currentAction = Action.NOTHING;
 					break;
                 case STATION_USAGE_RATE:
                     currentAction = Action.NOTHING;
 					break;
 				case INTEGRITY_CHECK:
 					System.out.println("checkLocationsVehicles = " + model.checkLocationsVehicles());
+					System.out.println("checkEndedRatesLimited = " + model.checkEndedRatesLimited(dateParser.getCurrentStringDate()));
+					System.out.println("checkEndedRatesIllimited = " + model.checkEndedRatesIllimited());
+                    currentAction = Action.NOTHING;
+					model.checkParkedVehicles();
+					model.checkStationParkedVehicles();
+					model.checkSubscriberLocation();
 					break;
                 default:
 					model.closeConnection();

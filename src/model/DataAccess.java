@@ -4,6 +4,7 @@ import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.sql.*;
 import controller.*;
+import view.*;
 
 public class DataAccess {
 	private Connection connection;
@@ -38,14 +39,50 @@ public class DataAccess {
 			Statement statement = this.connection.createStatement();
 			ResultSet result_set = statement.executeQuery(query);
 			while(result_set.next()){
-				if(result_set.getInt(3) > result_set.getInt(4)){
-					System.out.println("========== ERROR ==========");
-					System.out.println("Station name: "+result_set.getString(1)+" Class name: "+result_set.getString(2)+" Max spots: "+result_set.getInt(3)+" Parked vehicles: "+result_set.getInt(4)+'\n');
+				if(result_set.getInt(3) < result_set.getInt(4)){
+					IO.printParkedVehicles(result_set.getString(1),result_set.getString(2),result_set.getInt(3),result_set.getInt(4));
 					return false;
 				}
 			}
 			result_set.close();
 			statement.close();
+			return true;
+		} catch(SQLException e){
+			System.out.println("Connection error.");
+			return false;
+		}
+	}
+
+	public boolean checkStationParkedVehicles(){
+		try {
+			String query = "SELECT Location.IdVehicle, StationLocation.EndStationName, StationVehicle.StationName FROM Location INNER JOIN StationLocation ON StationLocation.IdLocation = Location.IdLocation LEFT JOIN StationVehicle ON (StationVehicle.IdVehicle = Location.IdVehicle AND StationVehicle.StationName = StationLocation.EndStationName) WHERE StationLocation.EndDate = (SELECT MAX(S.EndDate) FROM 	StationLocation S, Location L WHERE S.IdLocation = L.IdLocation AND	L.IdVehicle = Location.IdVehicle) AND Location.IdVehicle NOT IN (SELECT	L.IdVehicle	FROM Location L	WHERE L.IdLocation NOT IN (SELECT S.IdLocation FROM	StationLocation S))";
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+			while(result_set.next()){
+				if(!result_set.getString(2).equals(result_set.getString(3))){
+					IO.printStationParkedVehicles(result_set.getInt(1),result_set.getString(2),result_set.getString(3));
+					return false;
+				}
+			}
+			result_set.close();
+			statement.close();
+			return true;
+		} catch(SQLException e){
+			System.out.println("Connection error.");
+			return false;
+		}
+	}
+
+	public boolean checkSubscriberLocation() {
+		try {
+			String query = "SELECT Subscriber.CreditCard, UserClassLimitedRate.ClassName FROM Subscriber, UserClassLimitedRate WHERE UserClassLimitedRate.CreditCard = Subscriber.CreditCard AND UserClassLimitedRate.ClassName IN (SELECT UCIR.ClassName FROM UserClassIllimitedRate UCIR WHERE UCIR.CreditCard = Subscriber.CreditCard)";
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+			if(result_set.next()){
+				IO.printSubscriberLocation(result_set.getString(1),result_set.getString(2));
+				return false;
+			}
+			result_set.close();
 			return true;
 		} catch(SQLException e){
 			System.out.println("Connection error.");
@@ -91,30 +128,70 @@ public class DataAccess {
 		}
 	}
 
-	// 4th check
-	// public boolean 
+	// 4th check, first part
+	public boolean checkEndedRatesLimited(String currentDate) throws IllegalArgumentException {
+		try {
+			String query = "SELECT Subscriber.CreditCard, TO_CHAR(UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration, 'dd/mm/yyyy'), CASE WHEN (UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration) < TO_DATE('"+currentDate+"', 'YYYY-MM-DD') THEN 1 ELSE 0 END AS isFinished FROM Subscriber, UserClassLimitedRate WHERE UserClassLimitedRate.CreditCard = Subscriber.CreditCard";
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+			while (result_set.next()){
+				if (result_set.getInt(3) == 1) {
+					result_set.close();
+					return false;
+				}
+			}
+			result_set.close();
+			statement.close();
+			return true;
+
+		} catch(SQLException e){
+			e.printStackTrace();
+			System.out.println("Connection error.");
+			return false;
+		}
+	}
+
+	// 4th check, second part
+	public boolean checkEndedRatesIllimited() throws IllegalArgumentException {
+		try {
+			String query = "SELECT Subscriber.CreditCard, UserClassIllimitedRate.NbLocation, CASE WHEN UserClassIllimitedRate.NbLocation <= 0 THEN 1 ELSE 0 END AS isFinished FROM Subscriber, UserClassIllimitedRate WHERE UserClassIllimitedRate.CreditCard = Subscriber.CreditCard";
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+			while (result_set.next()){
+				if (result_set.getInt(3) == 1) {
+					result_set.close();
+					return false;
+				}
+			}
+			result_set.close();
+			statement.close();
+			return true;
+
+		} catch(SQLException e){
+			e.printStackTrace();
+			System.out.println("Connection error.");
+			return false;
+		}
+	}
+
+
+
 
 	// 5th check
 	public boolean checkLocationsVehicles() throws IllegalArgumentException {
-		try 
-			String query = "SELECT Location.IdLocation, Location.IdVehicle FROM Location WHERE Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L, StationLocation SL WHERE SL.IdLocation = L.IdLocation AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate AND Location.StartDate < SL.EndDate) OR Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L WHERE L.IdLocation NOT IN (SELECT SL.IdLocation FROM StationLocation SL) AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate) ORDER BY 1;";
+		try {
+			String query = "SELECT Location.IdLocation, Location.IdVehicle FROM Location WHERE Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L, StationLocation SL WHERE SL.IdLocation = L.IdLocation AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate AND Location.StartDate < SL.EndDate) OR Location.IdVehicle IN (SELECT L.IdVehicle FROM Location L WHERE L.IdLocation NOT IN (SELECT SL.IdLocation FROM StationLocation SL) AND L.IdLocation <> Location.IdLocation AND Location.StartDate > L.StartDate) ORDER BY 1";
 			Statement statement = this.connection.createStatement();
 			ResultSet result_set = statement.executeQuery(query);
 			boolean result = result_set.next(); // False if nothing in result
 			result_set.close();
+			statement.close();
 			return !result;
 		} catch(SQLException e){
-			try {
-				e.printStackTrace();
-				this.connection.rollback();
-			} catch(SQLException se){
-				System.out.println("This shouldn't happen !!!!!");
-				throw new IllegalArgumentException();
-			}
-			throw new IllegalArgumentException;
+			System.out.println("Connection error.");
+			return false;
 		}
 	}
-
 
 
 	public void insertStationLocation(Statement statement,int idLocation,String stationName,String endDate) throws IllegalArgumentException {
@@ -265,4 +342,22 @@ public class DataAccess {
 		}
 	}
 
+
+	public double getOccupationRate(Date date, String stationName) throws IllegalArgumentException {
+		try {
+			String query = "";
+			PreparedStatement statement = this.connection.prepareStatement(query);
+			statement.setDate(1, date);
+			statement.setString(2, stationName);
+			ResultSet result_set = statement.executeQuery();
+			result_set.next();
+			double result = result_set.getDouble(2);
+			result_set.close();
+			statement.close();
+			return result;
+		} catch(SQLException e){
+			throw new IllegalArgumentException();
+		}
+	}
 }
+
