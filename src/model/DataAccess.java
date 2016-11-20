@@ -39,7 +39,7 @@ public class DataAccess {
 			Statement statement = this.connection.createStatement();
 			ResultSet result_set = statement.executeQuery(query);
 			while(result_set.next()){
-				if(result_set.getInt(3) > result_set.getInt(4)){
+				if(result_set.getInt(3) < result_set.getInt(4)){
 					IO.printParkedVehicles(result_set.getString(1),result_set.getString(2),result_set.getInt(3),result_set.getInt(4));
 					return false;
 				}

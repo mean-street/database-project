@@ -15,7 +15,7 @@ public class IO {
 
 	public static void printParkedVehicles(String stationName,String className,int maxSpots,int parkedVehicles){
 		System.out.println("==================== ERROR ====================");
-		System.out.println("Station name: "+stationName+" Class name: "+className+" Max spots: "+maxSpots+" Parked vehicles: "+parkedVehicles+'\n');
+		System.out.println("Station name: "+stationName+" Class name: "+className+" Max spots: "+maxSpots+" Parked vehicles: "+parkedVehicles);
 		System.out.println("==================== ERROR ====================");
 	}
 
