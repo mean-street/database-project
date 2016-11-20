@@ -78,12 +78,14 @@ public class Vehlib {
 					
 					break;
 				case INTEGRITY_CHECK:
+					IO.startBlock();
 					System.out.println("checkLocationsVehicles = " + model.checkLocationsVehicles());
 					System.out.println("checkEndedRatesLimited = " + model.checkEndedRatesLimited(dateParser.getCurrentStringDate()));
 					System.out.println("checkEndedRatesIllimited = " + model.checkEndedRatesIllimited());
-					model.checkParkedVehicles();
-					model.checkStationParkedVehicles();
-					model.checkSubscriberLocation();
+					System.out.println("checkParkedVehicles = "+model.checkParkedVehicles());
+					System.out.println("checkStationParkedVehicles = "+model.checkStationParkedVehicles());
+					System.out.println("checkSubscriberLocation = "+model.checkSubscriberLocation());
+					IO.endBlock();
 					break;
                 default:
 					model.closeConnection();
