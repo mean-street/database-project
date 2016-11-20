@@ -1,5 +1,5 @@
 -- DROP all tables
-@drop_database
+-- @drop_database
 
 -- CREATE or RECREATE all tables
 CREATE TABLE Subscriber(
@@ -97,7 +97,7 @@ CREATE TABLE StationClass(
 );
 
 -- INSERTION
-@inserts_database
+-- @inserts_database
 
 -- Facturation d'une location
 SELECT	Location.IdLocation
