@@ -141,6 +141,7 @@ public class DataAccess {
 				}
 			}
 			result_set.close();
+			statement.close();
 			return true;
 
 		} catch(SQLException e){
@@ -163,6 +164,7 @@ public class DataAccess {
 				}
 			}
 			result_set.close();
+			statement.close();
 			return true;
 
 		} catch(SQLException e){
@@ -183,6 +185,7 @@ public class DataAccess {
 			ResultSet result_set = statement.executeQuery(query);
 			boolean result = result_set.next(); // False if nothing in result
 			result_set.close();
+			statement.close();
 			return !result;
 		} catch(SQLException e){
 			System.out.println("Connection error.");
@@ -339,4 +342,22 @@ public class DataAccess {
 		}
 	}
 
+
+	public double getOccupationRate(Date date, String stationName) throws IllegalArgumentException {
+		try {
+			String query = "";
+			PreparedStatement statement = this.connection.prepareStatement(query);
+			statement.setDate(1, date);
+			statement.setString(2, stationName);
+			ResultSet result_set = statement.executeQuery();
+			result_set.next();
+			double result = result_set.getDouble(2);
+			result_set.close();
+			statement.close();
+			return result;
+		} catch(SQLException e){
+			throw new IllegalArgumentException();
+		}
+	}
 }
+
