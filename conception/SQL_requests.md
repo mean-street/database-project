@@ -80,6 +80,8 @@ INFO: La requete renvoie le NbLocation du forfait si le forfait existe
 
 4) INSERT dans StationLocation
 
+	"INSERT INTO StationLocation VALUES("+idLocation+",'"+stationName+"',TO_DATE('"+endDate+"','YYYY-MM-DD'))"
+
 2 - Temps moyen d'utilisation par véhicule par mois
 ---------------------------------------------------
 Explication FORUM: Il s'agit de calculer la durée de location d'un véhicule durant un mois calendaire donné.
