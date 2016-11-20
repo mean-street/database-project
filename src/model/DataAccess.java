@@ -195,9 +195,9 @@ public class DataAccess {
 		}
 	}
 
-	public boolean checkIllimitedLocation(Statement statement,int idLocation,int creditCard) throws IllegalArgumentException {
+	public boolean checkIllimitedLocation(Statement statement,int idLocation) throws IllegalArgumentException {
 		try {
-			String query = "SELECT IdLocation FROM Location NATURAL JOIN UserClassIllimitedRate WHERE CreditCard = "+creditCard+" AND IdLocation = "+idLocation;
+			String query = "SELECT IdLocation FROM Location NATURAL JOIN UserClassIllimitedRate WHERE IdLocation = "+idLocation;
 			ResultSet result_set = statement.executeQuery(query);
 			boolean result = result_set.next();
 			result_set.close();
@@ -304,7 +304,7 @@ public class DataAccess {
 		}
 	}
 
-	public ArrayList<LocationBill> getLocationBill(int idLocation,String stationName,String endDate,int creditCard) throws IllegalArgumentException {
+	public ArrayList<LocationBill> getLocationBill(int idLocation,String stationName,String endDate) throws IllegalArgumentException {
 		try {
 			Statement statement = this.connection.createStatement();
 			// I Would have preferred REPEATABLE_READ but server seems to not allow it
@@ -317,7 +317,7 @@ public class DataAccess {
 			this.insertStationVehicle(statement,idLocation,stationName);
 			this.updateStationOccupation(statement,stationName,endDate);
 
-			if(this.checkIllimitedLocation(statement,idLocation,creditCard)){
+			if(this.checkIllimitedLocation(statement,idLocation)){
 				this.connection.commit();
 				return null;
 			}
