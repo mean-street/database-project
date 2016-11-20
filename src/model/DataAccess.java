@@ -131,9 +131,7 @@ public class DataAccess {
 	// 4th check
 	public boolean checkEndedRates(String currentDate) throws IllegalArgumentException {
 		try {
-			System.out.println("currentDate = " + currentDate);
-			String query = "SELECT Subscriber.CreditCard, TO_CHAR(UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration, 'dd/mm/yyyy'), CASE WHEN (UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration) < TO_DATE('" + currentDate + "', 'yyyy-mm-dd') THEN 1 ELSE 0 END AS isFinished FROM Subscriber, UserClassLimitedRate WHERE UserClassLimitedRate.CreditCard = Subscriber.CreditCard";
-			System.out.println(query);
+			String query = "SELECT Subscriber.CreditCard, TO_CHAR(UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration, 'dd/mm/yyyy'), CASE WHEN (UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration) < TO_DATE('"+currentDate+"', 'YYYY-MM-DD') THEN 1 ELSE 0 END AS isFinished FROM Subscriber, UserClassLimitedRate WHERE UserClassLimitedRate.CreditCard = Subscriber.CreditCard";
 			Statement statement = this.connection.createStatement();
 			ResultSet result_set = statement.executeQuery(query);
 			while (result_set.next()){
