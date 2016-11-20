@@ -307,7 +307,8 @@ public class DataAccess {
 	public ArrayList<LocationBill> getLocationBill(int idLocation,String stationName,String endDate,int creditCard) throws IllegalArgumentException {
 		try {
 			Statement statement = this.connection.createStatement();
-			this.connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+			// I Would have preferred REPEATABLE_READ but server seems to not allow it
+			this.connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 			if(this.checkLocationId(statement,idLocation)){
 				this.connection.commit();
 				throw new IllegalArgumentException();
@@ -315,6 +316,7 @@ public class DataAccess {
 			this.insertStationLocation(statement,idLocation,stationName,endDate);
 			this.insertStationVehicle(statement,idLocation,stationName);
 			this.updateStationOccupation(statement,stationName,endDate);
+
 			if(this.checkIllimitedLocation(statement,idLocation,creditCard)){
 				this.connection.commit();
 				return null;
@@ -341,8 +343,9 @@ public class DataAccess {
 			return result_list;
 		} catch(SQLException e){
 			try {
+				e.printStackTrace();
 				this.connection.rollback();
-				return null;
+				throw new IllegalArgumentException();
 			} catch(SQLException se){
 				System.out.println("This shouldn't happen !!!!!");
 				throw new IllegalArgumentException();
