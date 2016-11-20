@@ -21,10 +21,10 @@ public class Vehlib {
             switch(currentAction) {
                 case QUIT:
                     running = false;
-                break;
+					break;
                 case NOTHING:
                     currentAction = io.askForAction();
-                break;
+					break;
                 case HIRE_BILLING:
 					locationId = io.askForHireId();
 					stationName = io.askForStationName();
@@ -45,7 +45,7 @@ public class Vehlib {
 						System.out.println("Cette location n'existe pas.\n");
 					}
                     currentAction = Action.NOTHING;
-                break;
+					break;
                 case VEHICLE_MEAN_USE_TIME:
 					ArrayList<MonthlyVehicle> monthly_vehicle_list = model.getMonthlyVehicle(io.askForStartMonth());
 					IO.startBlock();
@@ -54,7 +54,7 @@ public class Vehlib {
 					}
 					IO.endBlock();
                     currentAction = Action.NOTHING;
-                break;
+					break;
                 case CATEGORY_MEAN_USE_TIME:
 					ArrayList<MonthlyClass> monthly_class_list = model.getMonthlyClass(io.askForStartMonth());
 					IO.startBlock();
@@ -63,7 +63,7 @@ public class Vehlib {
 					}
 					IO.endBlock();
                     currentAction = Action.NOTHING;
-                break;
+					break;
                 case MOST_USED_CATEGORY:
 					startDate = dateParser.getSQLDate(io.askForStartDate());
 					ArrayList<DecadeClass> decade_class_list = model.getDecadeClass(startDate);
@@ -73,10 +73,14 @@ public class Vehlib {
 					}
 					IO.endBlock();
                     currentAction = Action.NOTHING;
-                break;
+					break;
                 case STATION_USAGE_RATE:
                     currentAction = Action.NOTHING;
-                break;
+					break;
+				case INTEGRITY_CHECK:
+					System.out.println("checkLocationsVehicles = " + model.checkLocationsVehicles());
+                    currentAction = Action.NOTHING;
+					break;
                 default:
 					model.closeConnection();
                     throw new IllegalStateException();
