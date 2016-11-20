@@ -92,7 +92,30 @@ public class DataAccess {
 	}
 
 	// 4th check
-	// public boolean 
+	public boolean checkEndedRates(String currentDate) throws IllegalArgumentException {
+		try {
+			System.out.println("currentDate = " + currentDate);
+			String query = "SELECT Subscriber.CreditCard, TO_CHAR(UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration, 'dd/mm/yyyy'), CASE WHEN (UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration) < TO_DATE('" + currentDate + "', 'yyyy-mm-dd') THEN 1 ELSE 0 END AS isFinished FROM Subscriber, UserClassLimitedRate WHERE UserClassLimitedRate.CreditCard = Subscriber.CreditCard";
+			System.out.println(query);
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+			while (result_set.next()){
+				if (result_set.getInt(2) == 1) {
+					System.out.println("Nope");
+					result_set.close();
+					return false;
+				}
+			}
+			result_set.close();
+			return true;
+
+		} catch(SQLException e){
+			e.printStackTrace();
+			System.out.println("Connection error.");
+			return false;
+		}
+	}
+
 
 	// 5th check
 	public boolean checkLocationsVehicles() throws IllegalArgumentException {
@@ -104,17 +127,10 @@ public class DataAccess {
 			result_set.close();
 			return !result;
 		} catch(SQLException e){
-			try {
-				e.printStackTrace();
-				this.connection.rollback();
-			} catch(SQLException se){
-				System.out.println("This shouldn't happen !!!!!");
-				throw new IllegalArgumentException();
-			}
-			throw new IllegalArgumentException();
+			System.out.println("Connection error.");
+			return false;
 		}
 	}
-
 
 
 	public void insertStationLocation(Statement statement,int idLocation,String stationName,String endDate) throws IllegalArgumentException {

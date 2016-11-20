@@ -79,6 +79,7 @@ public class Vehlib {
 					break;
 				case INTEGRITY_CHECK:
 					System.out.println("checkLocationsVehicles = " + model.checkLocationsVehicles());
+					System.out.println("checkEndedRates = " + model.checkEndedRates(dateParser.getCurrentStringDate()));
                     currentAction = Action.NOTHING;
 					break;
                 default:
