@@ -389,8 +389,8 @@ public class DataAccess {
 				MonthlyClass monthly_class = new MonthlyClass();
 				monthly_class.setDate(monthDate);
 				monthly_class.setClassName(result_set.getString(1));
-				monthly_class.setAverageTime(result_set.getFloat(2));
-				monthly_class.setLocationCount(result_set.getInt(3));
+				monthly_class.setLocationCount(result_set.getInt(2));
+				monthly_class.setAverageTime(result_set.getFloat(3));
 				result_list.add(monthly_class);
 			}
 			result_set.close();
