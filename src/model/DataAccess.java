@@ -32,6 +32,27 @@ public class DataAccess {
 		}
 	}
 
+	public boolean checkParkedVehicles(){
+		try {
+			String query = "SELECT StationVehicle.StationName,Vehicle.ClassName, StationClass.MaxSpots, COUNT(Vehicle.IdVehicle) FROM Vehicle, StationVehicle, StationClass WHERE Vehicle.IdVehicle = StationVehicle.IdVehicle AND StationVehicle.StationName = StationClass.StationName AND StationClass.ClassName = Vehicle.ClassName GROUP BY StationVehicle.StationName, Vehicle.ClassName, StationClass.MaxSpots";
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+			while(result_set.next()){
+				if(result_set.getInt(3) > result_set.getInt(4)){
+					System.out.println("========== ERROR ==========");
+					System.out.println("Station name: "+result_set.getString(1)+" Class name: "+result_set.getString(2)+" Max spots: "+result_set.getInt(3)+" Parked vehicles: "+result_set.getInt(4)+'\n');
+					return false;
+				}
+			}
+			result_set.close();
+			statement.close();
+			return true;
+		} catch(SQLException e){
+			System.out.println("Connection error.");
+			return false;
+		}
+	}
+
 	public boolean checkLocationId(Statement statement,int idLocation) throws IllegalArgumentException {
 		try {
 			String query = "SELECT IdLocation FROM StationLocation WHERE IdLocation = "+idLocation;
