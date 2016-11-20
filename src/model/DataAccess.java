@@ -128,15 +128,14 @@ public class DataAccess {
 		}
 	}
 
-	// 4th check
-	public boolean checkEndedRates(String currentDate) throws IllegalArgumentException {
+	// 4th check, first part
+	public boolean checkEndedRatesLimited(String currentDate) throws IllegalArgumentException {
 		try {
 			String query = "SELECT Subscriber.CreditCard, TO_CHAR(UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration, 'dd/mm/yyyy'), CASE WHEN (UserClassLimitedRate.StartDate + UserClassLimitedRate.Duration) < TO_DATE('"+currentDate+"', 'YYYY-MM-DD') THEN 1 ELSE 0 END AS isFinished FROM Subscriber, UserClassLimitedRate WHERE UserClassLimitedRate.CreditCard = Subscriber.CreditCard";
 			Statement statement = this.connection.createStatement();
 			ResultSet result_set = statement.executeQuery(query);
 			while (result_set.next()){
 				if (result_set.getInt(3) == 1) {
-					System.out.println("Nope");
 					result_set.close();
 					return false;
 				}
@@ -150,6 +149,30 @@ public class DataAccess {
 			return false;
 		}
 	}
+
+	// 4th check, second part
+	public boolean checkEndedRatesIllimited() throws IllegalArgumentException {
+		try {
+			String query = "SELECT Subscriber.CreditCard, UserClassIllimitedRate.NbLocation, CASE WHEN UserClassIllimitedRate.NbLocation <= 0 THEN 1 ELSE 0 END AS isFinished FROM Subscriber, UserClassIllimitedRate WHERE UserClassIllimitedRate.CreditCard = Subscriber.CreditCard";
+			Statement statement = this.connection.createStatement();
+			ResultSet result_set = statement.executeQuery(query);
+			while (result_set.next()){
+				if (result_set.getInt(3) == 1) {
+					result_set.close();
+					return false;
+				}
+			}
+			result_set.close();
+			return true;
+
+		} catch(SQLException e){
+			e.printStackTrace();
+			System.out.println("Connection error.");
+			return false;
+		}
+	}
+
+
 
 
 	// 5th check
