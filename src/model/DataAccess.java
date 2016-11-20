@@ -4,6 +4,7 @@ import java.lang.IllegalArgumentException;
 import java.util.ArrayList;
 import java.sql.*;
 import controller.*;
+import view.*;
 
 public class DataAccess {
 	private Connection connection;
@@ -39,8 +40,7 @@ public class DataAccess {
 			ResultSet result_set = statement.executeQuery(query);
 			while(result_set.next()){
 				if(result_set.getInt(3) > result_set.getInt(4)){
-					System.out.println("========== ERROR ==========");
-					System.out.println("Station name: "+result_set.getString(1)+" Class name: "+result_set.getString(2)+" Max spots: "+result_set.getInt(3)+" Parked vehicles: "+result_set.getInt(4)+'\n');
+					IO.printParkedVehicles(result_set.getString(1),result_set.getString(2),result_set.getInt(3),result_set.getInt(4));
 					return false;
 				}
 			}
