@@ -6,4 +6,4 @@ vehlib:
 run: vehlib
 	java -classpath bin:bin/ojdbc7.jar Vehlib
 
-.PHONY: doc run
+.PHONY: run
