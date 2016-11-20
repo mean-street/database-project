@@ -135,7 +135,7 @@ public class DataAccess {
 			Statement statement = this.connection.createStatement();
 			ResultSet result_set = statement.executeQuery(query);
 			while (result_set.next()){
-				if (result_set.getInt(2) == 1) {
+				if (result_set.getInt(3) == 1) {
 					System.out.println("Nope");
 					result_set.close();
 					return false;
