@@ -1,4 +1,4 @@
-all: application run
+all: run
 
 vehlib:
 	javac -d bin -classpath bin/ -sourcepath src/ src/Vehlib.java
