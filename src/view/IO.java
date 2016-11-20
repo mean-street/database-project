@@ -22,12 +22,13 @@ public class IO {
             "\t2. Temps moyen d’utilisation par véhicules par mois\n" +
             "\t3. Temps moyen d’utilisation par catégorie de véhicule par mois\n" +
             "\t4. Catégorie de véhicule la plus utilisée par tranche d’âge de 10 ans\n" +
-            "\t5. Taux d’occupation des stations sur la journée\n"
+            "\t5. Taux d’occupation des stations sur la journée\n" + 
+            "\t6. Vérifier l'intégrité de la base de données\n"
         );
 
         while(action < 0 || action >= Action.values().length - 1) {
             try {
-                action = Integer.parseInt(this.console.readLine("Sélectionner une action [0/1/2/3/4/5] : "));
+                action = Integer.parseInt(this.console.readLine("Sélectionner une action [0/1/2/3/4/5/6] : "));
             } catch(NumberFormatException e) {
                 action = -1;
             }
