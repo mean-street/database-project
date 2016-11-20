@@ -73,7 +73,7 @@ public class Vehlib {
 					stringDate = io.askForStartDate();
 					double result = model.getOccupationRate(stringDate, stationName);
 					IO.startBlock();
-					System.out.println(stationName + " : " + result);
+					System.out.println("Station name: "+stationName+"\tOccupation rate: "+result);
 					IO.endBlock();
 					
 					break;
