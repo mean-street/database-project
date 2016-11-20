@@ -94,7 +94,6 @@ public class DataAccess {
 			String query = "SELECT StationOccupation.StationName, StationOccupation.Day, StationOccupation.CurrentOccupation, StationOccupation.MaxOccupation FROM StationOccupation WHERE StationOccupation.StationName = '"+stationName+"' AND StationOccupation.Day = (SELECT MAX(SO.Day) FROM StationOccupation SO WHERE 	SO.StationName = StationOccupation.StationName)";
 			ResultSet result_set = statement.executeQuery(query);
 			if(!result_set.next()){
-				System.out.println("LOL");
 				this.insertStationOccupation(statement,stationName,currentDate);
 			}
 			else {
@@ -336,6 +335,7 @@ public class DataAccess {
 				result_list.add(location_bill);
 			}
 			this.connection.commit();
+			this.connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 			result_set.close();
 			preparedStatement.close();
 			return result_list;
