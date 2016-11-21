@@ -16,7 +16,8 @@ AND		Vehicle.IdVehicle = Location.IdVehicle
 AND		Subscriber.CreditCard = UserClassIllimitedRate.CreditCard
 AND 	UserClassIllimitedRate.ClassName = Vehicle.ClassName;
 
-SELECT 	CASE WHEN (MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 < 25 OR MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 > 65)
+SELECT 	(CURRENT_DATE - L.StartDate) AS LOL,
+		CASE WHEN (MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 < 25 OR MONTHS_BETWEEN(CURRENT_DATE, S.Birthdate)/12 > 65)
 			THEN
 				CASE WHEN (CURRENT_DATE - L.StartDate) * 24 <= 1
 					THEN 0
